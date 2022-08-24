@@ -1,5 +1,3 @@
-//Layout
-
 import Class from "@/pages/Manage/Class";
 import Student from "@/pages/Manage/Student";
 import Subject from "@/pages/Manage/Subject";

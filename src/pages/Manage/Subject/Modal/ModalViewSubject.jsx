@@ -4,7 +4,7 @@ import Axios from "axios";
 import { Modal, Form, Input } from "antd";
 
 import { useSelector, useDispatch } from "react-redux";
-import classAction from "@/redux/action/actionClass";
+import classAction from "@/redux/action/class";
 
 const ModalViewClass = (props) => {
   //get info class to view

@@ -3,7 +3,7 @@ import { Space, Table, Button, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { useSelector, useDispatch } from "react-redux";
-import classAction from "@/redux/action/actionClass";
+import classAction from "@/redux/action/class";
 import studentAction from "@/redux/action/actionStudent";
 import ModalAddStudent from "../../Student/Modal/ModalAddStudent";
 
@@ -34,10 +34,10 @@ const TableViewStudentClass = (props) => {
 
   //modal
   const handleCancel = () => {
-    dispatch(classAction.activeViewStudentClass(false));
+    // dispatch(classAction.activeViewStudentClass(false));
   };
   const handleOk = () => {
-    dispatch(classAction.activeViewStudentClass(false));
+    // dispatch(classAction.activeViewStudentClass(false));
   };
 
   const columns = [

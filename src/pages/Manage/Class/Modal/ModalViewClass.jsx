@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
-import Axios from "axios";
-
 import { Modal, Form, Input } from "antd";
 
 import { useSelector, useDispatch } from "react-redux";
-import classAction from "@/redux/action/actionClass";
+import classAction from "@/redux/action/class";
 
 const ModalViewClass = (props) => {
   //get info class to view
@@ -12,12 +9,10 @@ const ModalViewClass = (props) => {
   const dispatch = useDispatch();
   const classReducer = useSelector((state) => state.Class);
 
-  const handleOk = () => {
-    dispatch(classAction.activeViewClassModal(false));
-  };
+  const handleOk = () => {};
 
   const handleCancel = () => {
-    dispatch(classAction.activeViewClassModal(false));
+    // dispatch(classAction.activeViewClassModal(false));
   };
 
   return (

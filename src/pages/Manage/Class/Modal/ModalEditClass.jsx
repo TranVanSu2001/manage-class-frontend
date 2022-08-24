@@ -1,59 +1,72 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Axios from "axios";
 import { Modal, Form, Input, notification, InputNumber } from "antd";
-import { useSelector, useDispatch } from "react-redux";
-import classAction from "@/redux/action/actionClass";
+import _ from "lodash";
+import { connect } from "react-redux";
+import {
+  actSetModalClassOpen,
+  actSetSelectedClass,
+  actSaveCreateClass,
+} from "@/redux/action/class";
 
-const ModalAddClass = () => {
-  const [id, setId] = useState("");
-  const [name, setName] = useState("");
-  const [numOfStu, setNumOfStu] = useState("");
+const ModalAddClass = (props) => {
+  const { isModalOpen, selectedClass } = props;
   const [listID, setListID] = useState([]);
+  const [form] = Form.useForm();
 
-  const dispatch = useDispatch();
-  const classReducer = useSelector((state) => state.Class);
+  const isCreateMode = useMemo(() => {
+    return _.isEmpty(selectedClass);
+  }, [selectedClass]);
 
-  const handleOk = () => {
-    //submit info class to backend
-    Axios.post("http://localhost:3002/class/add", {
-      id: id,
-      name: name,
-      numOfStu: numOfStu,
+  useEffect(() => {
+    form.setFieldsValue({
+      id: selectedClass?.id,
+      name: selectedClass?.name,
+      numberOfStudent: selectedClass?.numberOfStudent,
     });
-    setId("");
-    setName("");
-    setNumOfStu("");
-    dispatch(classAction.activeAddClassModal(false));
+  }, [selectedClass, form]);
 
-    Axios.get("http://localhost:3002/class/getListId").then((data) => {
-      setListID(data.data);
-    });
+  const onSubmitForm = async () => {
+    const { id, name, numberOfStudent } = await form.validateFields([
+      "id",
+      "name",
+      "numberOfStudent",
+    ]);
 
-    var IdExist = false;
-    listID.forEach((element) => {
-      if (element.id === id) {
-        IdExist = true;
-      }
-    });
+    const requestBody = {
+      id,
+      name,
+      numberOfStudent,
+    };
 
-    if (numOfStu <= 0) {
-      noticationAddClass(
-        "error",
-        "Number of student must be greater than zero"
-      );
-
-      return;
-    }
-
-    if (!IdExist) {
-      noticationAddClass("success", "Add class success");
+    if (isCreateMode) {
+      Axios.post("http://localhost:3002/class", {
+        id,
+        name,
+        numberOfStudent,
+      }).then((res) => {
+        if (res?.data?.code === 200) {
+          props.actSaveCreateClass(requestBody);
+          props.actSetModalClassOpen(false);
+        }
+      });
     } else {
-      noticationAddClass("error", "ID exist");
+      Axios.put("http://localhost:3002/class", {
+        id,
+        name,
+        numberOfStudent,
+      }).then((res) => {
+        if (res?.data?.code === 200) {
+          // TODO: implement action, reducer for update
+          props.actSetModalClassOpen(false);
+        }
+      });
     }
   };
 
   const handleCancel = () => {
-    dispatch(classAction.activeAddClassModal(false));
+    props.actSetModalClassOpen(false);
+    props.actSetSelectedClass(null);
   };
 
   //show notication after add successfully
@@ -67,21 +80,14 @@ const ModalAddClass = () => {
 
   return (
     <Modal
-      title="Add class"
-      visible={classReducer.activeAddModal}
-      onOk={handleOk}
+      title={isCreateMode ? "Add Class" : "Update Class"}
+      visible={isModalOpen}
+      onOk={onSubmitForm}
       onCancel={handleCancel}
-      okText={"Add"}
+      okText={isCreateMode ? "Add" : "Update"}
       width="30rem"
     >
-      <Form
-        name="basic"
-        layout="vertical"
-        initialValues={{
-          remember: true,
-        }}
-        autoComplete="off"
-      >
+      <Form layout="vertical" form={form}>
         <Form.Item
           label="ID"
           name="id"
@@ -110,7 +116,7 @@ const ModalAddClass = () => {
 
         <Form.Item
           label="Number Student"
-          name={numOfStu}
+          name="numberOfStudent"
           rules={[
             {
               required: true,
@@ -121,6 +127,8 @@ const ModalAddClass = () => {
           <InputNumber
             placeholder="Enter number of student"
             style={{ width: "100%" }}
+            min={1}
+            max={30}
           />
         </Form.Item>
       </Form>
@@ -128,4 +136,10 @@ const ModalAddClass = () => {
   );
 };
 
-export default ModalAddClass;
+export default connect(
+  (store) => ({
+    isModalOpen: store.Class.isModalOpen,
+    selectedClass: store.Class.selectedClass,
+  }),
+  { actSetModalClassOpen, actSetSelectedClass, actSaveCreateClass }
+)(ModalAddClass);

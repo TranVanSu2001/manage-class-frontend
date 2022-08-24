@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Modal, Form, Input } from "antd";
 
 import { useSelector, useDispatch } from "react-redux";
-import classAction from "@/redux/action/actionClass";
+import classAction from "@/redux/action/class";
 
 const ModalClass = (props) => {
   const { modalClassInfomation } = props;

@@ -1,13 +1,17 @@
 import {
-  SET_ADD_CLASS_MODAL,
-  SET_EDIT_CLASS_MODAL,
   SET_VIEW_CLASS_MODAL,
   SET_VIEW_STUDENT_IN_CLASS,
+  SAVE_GET_LIST_CLASS,
+  SET_MODAL_CLASS_OPEN,
+  SET_SELECTED_CLASS,
+  SAVE_CREATE_CLASS
+
 } from "../type";
 
 const initialState = {
-  activeAddModal: false,
-  activeEditModal: false,
+  listClass: [],
+  isModalOpen: false,
+  selectedClass: {},
   activeViewModal: false,
   activeViewStudentClass: false,
 };
@@ -16,17 +20,30 @@ const classReducer = (state = initialState, action) => {
   const { type, payload } = action;
 
   switch (type) {
-    case SET_ADD_CLASS_MODAL:
+    case SAVE_GET_LIST_CLASS:
       return {
         ...state,
-        activeAddModal: payload,
+        listClass: payload
       };
 
-    case SET_EDIT_CLASS_MODAL:
+    case SET_MODAL_CLASS_OPEN:
       return {
         ...state,
-        activeEditModal: payload,
+        isModalOpen: payload
       };
+
+    case SET_SELECTED_CLASS:
+      return {
+        ...state,
+        selectedClass: payload
+      };
+
+    case SAVE_CREATE_CLASS: {
+      return {
+        ...state,
+        listClass: [...state.listClass, payload]
+      };
+    }
 
     case SET_VIEW_CLASS_MODAL:
       return {

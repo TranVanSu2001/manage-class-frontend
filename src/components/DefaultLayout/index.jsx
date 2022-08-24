@@ -20,29 +20,46 @@ function getItem(label, key, icon, children) {
 }
 
 const items = [
-  getItem(
-    "Home",
-    "1",
-    <Link to="/">
-      <AiFillHome />
-    </Link>
-  ),
-  getItem(
-    "Manage",
-    "sub1",
-    <Link to="/">
-      <AiOutlineUnorderedList />
-    </Link>,
-    [
-      getItem("Class", "2", <Link to="/class"></Link>),
-      getItem("Student", "3", <Link to="/student"></Link>),
-      getItem("Subject", "4", <Link to="/subject"></Link>),
-    ]
-  ),
+  {
+    label: "Home",
+    key: "1",
+    icon: (
+      <Link to="/">
+        <AiFillHome />
+      </Link>
+    ),
+  },
+  {
+    label: "Manage",
+    key: "sub1",
+    icon: (
+      <Link to="/">
+        <AiOutlineUnorderedList />
+      </Link>
+    ),
+    children: [
+      {
+        label: "Class",
+        key: "2",
+        icon: <Link to="/class"></Link>,
+      },
+      {
+        label: "Student",
+        key: "3",
+        icon: <Link to="/student"></Link>,
+      },
+      {
+        label: "Subject",
+        key: "4",
+        icon: <Link to="/subject"></Link>,
+      },
+    ],
+  },
 ];
 
 const DefaultLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const [activeKey, setActiveKey] = useState(null);
 
   return (
     <DefaultLayoutWrapper>

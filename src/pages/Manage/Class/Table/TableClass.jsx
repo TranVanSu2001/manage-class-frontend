@@ -8,8 +8,12 @@ import {
 } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { message, Popconfirm } from "antd";
-import { useDispatch } from "react-redux";
-import classAction from "@/redux/action/actionClass";
+import { connect } from "react-redux";
+import {
+  actSaveGetListClass,
+  actSetModalClassOpen,
+  actSetSelectedClass,
+} from "@/redux/action/class";
 import TableViewStudentClass from "./TableViewStudentClass";
 import ModalViewClass from "../Modal/ModalViewClass";
 
@@ -32,22 +36,21 @@ const getColumns = (
   },
   {
     title: "Number of Student",
-    dataIndex: "numStu",
-    key: "numStu",
+    dataIndex: "numberOfStudent",
+    key: "numberOfStudent",
   },
   {
     title: "Action",
     dataIndex: "action",
     key: "action",
-    render: (value, info) => (
+    render: (value, classInfo) => (
       <Space size="middle">
         <Button
           type="primary"
           icon={<EditOutlined />}
           size="small"
-          style={{ marginBottom: "1rem" }}
           onClick={() => {
-            onEditClass(info.id);
+            onEditClass(classInfo);
           }}
         >
           Edit
@@ -59,12 +62,12 @@ const getColumns = (
           size="small"
           style={{ margin: "0 10px" }}
           onClick={() => {
-            onDeleteClass(info.id);
+            onDeleteClass(classInfo.id);
           }}
         >
           <Popconfirm
             title="Are you sure to delete this task?"
-            onConfirm={() => onConfirmDelete(info.id)}
+            onConfirm={() => onConfirmDelete(classInfo.id)}
             onCancel={onCancelDelete}
             okText="Yes"
             cancelText="No"
@@ -83,52 +86,41 @@ const getColumns = (
           type="primary"
           icon={<UnorderedListOutlined />}
           size="small"
-          onClick={() => onViewClass(info.id)}
+          onClick={() => onViewClass(classInfo.id)}
         >
-          View
+          Detail
         </Button>
       </Space>
     ),
   },
 ];
 
-const TableClass = () => {
-  const [listClass, setListClass] = useState([]);
-  //view class info
+const TableClass = (props) => {
+  const { listClass } = props;
+
   const [infoClass, setInfoClass] = useState({});
+  const [isModalOpen, setModalOpen] = useState({});
   const [infoStudentByIdClass, setInfoStudentByClass] = useState([]);
 
   //get details class to show
   useEffect(() => {
-    axios.get("http://localhost:3002/class/getClass").then((data) => {
-      setListClass(data.data || []);
+    axios.get("http://localhost:3002/class").then((res) => {
+      props.actSaveGetListClass(res?.data?.data || []);
     });
-  }, [listClass]);
+  }, []);
 
   const data = [];
   listClass?.forEach((value, key) => {
     data.push({
       id: value.id,
       name: value.name,
-      numStu: value.numberOfStudent,
+      numberOfStudent: value.numberOfStudent,
     });
   });
 
-  const dispatch = useDispatch();
-
-  const onEditClass = (idEdit) => {
-    axios
-      .post("http://localhost:3002/class/getInfoById", {
-        idEdit: idEdit,
-      })
-      .then((response) => {
-        setInfoClass(response.data[0]);
-      })
-      .catch((error) => {
-        console.log("error: " + error);
-      });
-
-    dispatch(classAction.activeEditClassModal(true));
+  const onEditClass = (classInfo) => {
+    props.actSetSelectedClass(classInfo);
+    props.actSetModalClassOpen(true);
   };
 
   const onDeleteClass = (idDelete) => {
@@ -149,7 +141,6 @@ const TableClass = () => {
       .catch((error) => {
         console.log("error: " + error);
       });
-    dispatch(classAction.activeViewStudentClass(true));
   };
 
   //notication delete
@@ -175,10 +166,15 @@ const TableClass = () => {
         )}
       />
 
-      <ModalViewClass infoClass={infoClass} />
+      <ModalViewClass infoClass={infoClass} isModalOpen={isModalOpen} />
       <TableViewStudentClass infoStudentByIdClass={infoStudentByIdClass} />
     </div>
   );
 };
 
-export default TableClass;
+export default connect(
+  (store) => ({
+    listClass: store.Class.listClass,
+  }),
+  { actSaveGetListClass, actSetModalClassOpen, actSetSelectedClass }
+)(TableClass);

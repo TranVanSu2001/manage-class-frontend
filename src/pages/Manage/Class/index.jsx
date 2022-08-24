@@ -2,16 +2,14 @@ import React from "react";
 import TableClass from "./Table/TableClass";
 import { PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
-import { useDispatch } from "react-redux";
-import classAction from "@/redux/action/actionClass";
+import { connect } from "react-redux";
+import { actSetModalClassOpen } from "@/redux/action/class";
 import ModalEditClass from "./Modal/ModalEditClass";
 import { ClassWrapper, ClassContainer, PageHeadingWrapper } from "./style";
 
-const Class = () => {
-  const dispatch = useDispatch();
-
-  const showModal = () => {
-    dispatch(classAction.activeAddClassModal(true));
+const Class = (props) => {
+  const onOpenModal = () => {
+    props.actSetModalClassOpen(true);
   };
 
   return (
@@ -23,7 +21,7 @@ const Class = () => {
           type="primary"
           icon={<PlusOutlined />}
           style={{ marginBottom: "1rem" }}
-          onClick={showModal}
+          onClick={onOpenModal}
         >
           Add
         </Button>
@@ -38,4 +36,6 @@ const Class = () => {
   );
 };
 
-export default Class;
+export default connect(() => ({}), {
+  actSetModalClassOpen,
+})(Class);
