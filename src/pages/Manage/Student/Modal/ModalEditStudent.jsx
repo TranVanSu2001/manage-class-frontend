@@ -214,7 +214,7 @@ const ModalEditStudent = (props) => {
 
             {listSex.map((key, index) => {
               return (
-                <Option value={key} key={key}>
+                <Option value={key} key={index}>
                   {key}
                 </Option>
               );

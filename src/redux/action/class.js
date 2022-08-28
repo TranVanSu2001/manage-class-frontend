@@ -4,7 +4,9 @@ import {
   SAVE_GET_LIST_CLASS,
   SET_MODAL_CLASS_OPEN,
   SET_SELECTED_CLASS,
-  SAVE_CREATE_CLASS
+  SAVE_CREATE_CLASS,
+  SAVE_UPDATE_CLASS,
+  CHANGE_INFO_TABLE,
 } from "../type";
 
 export const actSaveGetListClass = (payload) => ({
@@ -14,12 +16,12 @@ export const actSaveGetListClass = (payload) => ({
 
 export const actSetModalClassOpen = (payload) => ({
   type: SET_MODAL_CLASS_OPEN,
-  payload
+  payload,
 });
 
 export const actSetSelectedClass = (payload) => ({
   type: SET_SELECTED_CLASS,
-  payload
+  payload,
 });
 
 export const activeViewClassModal = (payload) => ({
@@ -32,8 +34,17 @@ export const actSaveCreateClass = (payload) => ({
   payload,
 });
 
+export const actSaveUpdateClass = (payload) => ({
+  type: SAVE_UPDATE_CLASS,
+  payload,
+});
+
 export const activeViewStudentClass = (payload) => ({
   type: SET_VIEW_STUDENT_IN_CLASS,
   payload,
 });
 
+export const actChangeInfoTable = (payload) => ({
+  type: CHANGE_INFO_TABLE,
+  payload,
+});

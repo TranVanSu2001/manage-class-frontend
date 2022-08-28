@@ -14,7 +14,7 @@ const App = () => {
 
             return (
               <Route
-                key={route.path}
+                key={index}
                 path={route.path}
                 element={
                   <Layout key={route.path}>

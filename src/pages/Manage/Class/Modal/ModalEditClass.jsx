@@ -1,23 +1,27 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import Axios from "axios";
-import { Modal, Form, Input, notification, InputNumber } from "antd";
+import { Modal, Form, Input, InputNumber, notification } from "antd";
 import _ from "lodash";
 import { connect } from "react-redux";
 import {
   actSetModalClassOpen,
   actSetSelectedClass,
   actSaveCreateClass,
+  actSaveUpdateClass,
+  actSaveGetListClass,
+  actChangeInfoTable,
 } from "@/redux/action/class";
 
 const ModalAddClass = (props) => {
-  const { isModalOpen, selectedClass } = props;
-  const [listID, setListID] = useState([]);
+  //select from redux
+  const { isModalOpen, selectedClass, listClass, onChangeInfoTable } = props;
   const [form] = Form.useForm();
 
   const isCreateMode = useMemo(() => {
     return _.isEmpty(selectedClass);
   }, [selectedClass]);
 
+  //validate form to get input value
   useEffect(() => {
     form.setFieldsValue({
       id: selectedClass?.id,
@@ -39,6 +43,7 @@ const ModalAddClass = (props) => {
       numberOfStudent,
     };
 
+    //add info class
     if (isCreateMode) {
       Axios.post("http://localhost:3002/class", {
         id,
@@ -48,8 +53,14 @@ const ModalAddClass = (props) => {
         if (res?.data?.code === 200) {
           props.actSaveCreateClass(requestBody);
           props.actSetModalClassOpen(false);
+          noticationAddClass("success", "Add class successfully");
+        } else if (res?.data.code === 304) {
+          noticationAddClass("error", "Exist class id");
+          props.actSetModalClassOpen(false);
         }
       });
+
+      //edit info selected class
     } else {
       Axios.put("http://localhost:3002/class", {
         id,
@@ -58,13 +69,35 @@ const ModalAddClass = (props) => {
       }).then((res) => {
         if (res?.data?.code === 200) {
           // TODO: implement action, reducer for update
+
+          listClass.forEach((classElement) => {
+            if (classElement.id === id) {
+              classElement.name = name;
+              classElement.numberOfStudent = numberOfStudent;
+            }
+          });
+
+          // props.actSaveGetListClass([]);
+          props.actChangeInfoTable(!onChangeInfoTable);
+          props.actSaveGetListClass(listClass);
           props.actSetModalClassOpen(false);
+          noticationAddClass("success", "Edit class successfully");
+        } else if (res?.data?.code === 400) {
+          props.actSetModalClassOpen(false);
+          noticationAddClass("success", "Edit class successfully");
         }
       });
     }
+
+    // //reset form aftet submit
+    form.setFieldsValue({
+      id: "",
+      name: "",
+      numberOfStudent: "",
+    });
   };
 
-  const handleCancel = () => {
+  const handleCancelModal = () => {
     props.actSetModalClassOpen(false);
     props.actSetSelectedClass(null);
   };
@@ -83,7 +116,7 @@ const ModalAddClass = (props) => {
       title={isCreateMode ? "Add Class" : "Update Class"}
       visible={isModalOpen}
       onOk={onSubmitForm}
-      onCancel={handleCancel}
+      onCancel={handleCancelModal}
       okText={isCreateMode ? "Add" : "Update"}
       width="30rem"
     >
@@ -140,6 +173,15 @@ export default connect(
   (store) => ({
     isModalOpen: store.Class.isModalOpen,
     selectedClass: store.Class.selectedClass,
+    listClass: store.Class.listClass,
+    onChangeInfoTable: store.Class.onChangeInfoTable,
   }),
-  { actSetModalClassOpen, actSetSelectedClass, actSaveCreateClass }
+  {
+    actSetModalClassOpen,
+    actSetSelectedClass,
+    actSaveCreateClass,
+    actSaveUpdateClass,
+    actSaveGetListClass,
+    actChangeInfoTable,
+  }
 )(ModalAddClass);

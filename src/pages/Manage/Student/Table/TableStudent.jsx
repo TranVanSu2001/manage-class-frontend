@@ -50,7 +50,7 @@ const TableStudent = () => {
   // console.log("list id", listIdClass);
   var listIdClassFiltter = [];
 
-  filterClass = listIdClass?.map((key, index) => {
+  filterClass = listIdClass?.forEach((key, index) => {
     // console.log({ text: key.id, value: key.id });
     // filterClass.push({ text: key.id, value: key.id });
     const listClass = { text: key.id, value: key.id };
@@ -68,7 +68,7 @@ const TableStudent = () => {
   // console.log("optionClassFilterChoice", optionClassFilterChoice);
 
   const data = [];
-  listStudent.map((value, key) => {
+  listStudent.forEach((value, key) => {
     data.push({
       id: value.id,
       name: value.name,

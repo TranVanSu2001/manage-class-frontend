@@ -13,9 +13,11 @@ import {
   actSaveGetListClass,
   actSetModalClassOpen,
   actSetSelectedClass,
+  actChangeInfoTable,
+  activeViewStudentClass,
 } from "@/redux/action/class";
 import TableViewStudentClass from "./TableViewStudentClass";
-import ModalViewClass from "../Modal/ModalViewClass";
+// import ModalViewClass from "../Modal/ModalViewClass";
 
 const getColumns = (
   onEditClass,
@@ -61,9 +63,6 @@ const getColumns = (
           icon={<DeleteOutlined />}
           size="small"
           style={{ margin: "0 10px" }}
-          onClick={() => {
-            onDeleteClass(classInfo.id);
-          }}
         >
           <Popconfirm
             title="Are you sure to delete this task?"
@@ -96,21 +95,20 @@ const getColumns = (
 ];
 
 const TableClass = (props) => {
-  const { listClass } = props;
+  const { listClass, onChangeInfoTable } = props;
 
   const [infoClass, setInfoClass] = useState({});
   const [isModalOpen, setModalOpen] = useState({});
   const [infoStudentByIdClass, setInfoStudentByClass] = useState([]);
-
   //get details class to show
   useEffect(() => {
     axios.get("http://localhost:3002/class").then((res) => {
       props.actSaveGetListClass(res?.data?.data || []);
     });
-  }, []);
+  }, [onChangeInfoTable]);
 
   const data = [];
-  listClass?.forEach((value, key) => {
+  listClass.forEach((value, key) => {
     data.push({
       id: value.id,
       name: value.name,
@@ -124,23 +122,24 @@ const TableClass = (props) => {
   };
 
   const onDeleteClass = (idDelete) => {
-    axios.post("http://localhost:3002/class/deleteClass", {
+    axios.delete(`http://localhost:3002/class/${idDelete}`, {
       idDelete: idDelete,
     });
+    props.actChangeInfoTable(!onChangeInfoTable);
   };
 
-  const onViewClass = (idClass) => {
+  const onViewClass = (classID) => {
     axios
-      .post("http://localhost:3002/class/getListStudentById", {
-        idClass: idClass,
+      .get(`http://localhost:3002/class/getStudent/${classID}`, {
+        classID: classID,
       })
-
       .then((response) => {
-        setInfoStudentByClass(response.data);
+        setInfoStudentByClass(response.data.data);
       })
       .catch((error) => {
         console.log("error: " + error);
       });
+    props.activeViewStudentClass(true);
   };
 
   //notication delete
@@ -166,7 +165,7 @@ const TableClass = (props) => {
         )}
       />
 
-      <ModalViewClass infoClass={infoClass} isModalOpen={isModalOpen} />
+      {/* <ModalViewClass infoClass={infoClass} isModalOpen={isModalOpen} /> */}
       <TableViewStudentClass infoStudentByIdClass={infoStudentByIdClass} />
     </div>
   );
@@ -175,6 +174,13 @@ const TableClass = (props) => {
 export default connect(
   (store) => ({
     listClass: store.Class.listClass,
+    onChangeInfoTable: store.Class.onChangeInfoTable,
   }),
-  { actSaveGetListClass, actSetModalClassOpen, actSetSelectedClass }
+  {
+    activeViewStudentClass,
+    actSaveGetListClass,
+    actSetModalClassOpen,
+    actSetSelectedClass,
+    actChangeInfoTable,
+  }
 )(TableClass);

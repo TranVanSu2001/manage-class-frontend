@@ -26,15 +26,15 @@ const ModalAddStudent = () => {
 
   useEffect(() => {
     setListIdClass([]);
-    Axios.get("http://localhost:3002/class/getListId").then((data) => {
-      setListIdClass(data.data || []);
-    });
+    // Axios.get("http://localhost:3002/class/getListId").then((data) => {
+    //   setListIdClass(data.data || []);
+    // });
   }, [studentReducer.activeAddModal]);
 
   useEffect(() => {
-    Axios.get("http://localhost:3002/class/getListId").then((data) => {
-      setListStudentId(data.data || []);
-    });
+    // Axios.get("http://localhost:3002/class/getListId").then((data) => {
+    //   setListStudentId(data.data || []);
+    // });
   }, []);
 
   const listSex = ["Male", "Female"];

@@ -4,12 +4,6 @@ import "antd/dist/antd.css";
 import {
   HeaderTotal,
   HomePageWrapper,
-  HeaderHomePage,
-  Icon,
-  IconPage,
-  IconText,
-  Navigation,
-  LiNavigation,
   ContentHeader,
   HeadingContent,
   ContentDescription,
@@ -21,21 +15,21 @@ import Topbar from "../Topbar";
 
 import "../style.css";
 
-const style = {
-  height: 40,
-  width: 40,
-  lineHeight: "40px",
-  borderRadius: 4,
-  backgroundColor: "#1088e9",
-  color: "#fff",
-  textAlign: "center",
-  fontSize: 14,
-};
+// const style = {
+//   height: 40,
+//   width: 40,
+//   lineHeight: "40px",
+//   borderRadius: 4,
+//   backgroundColor: "#1088e9",
+//   color: "#fff",
+//   textAlign: "center",
+//   fontSize: 14,
+// };
 
 const Header = () => {
-  const backTop = () => {
-    window.scrollTo(0, document.body.scrollHeight);
-  };
+  // const backTop = () => {
+  //   window.scrollTo(0, document.body.scrollHeight);
+  // };
 
   return (
     <HeaderTotal>

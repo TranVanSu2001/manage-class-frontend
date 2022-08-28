@@ -39,7 +39,7 @@ const TableSubject = () => {
   // console.log("list id", listIdClass);
   var listIdClassFiltter = [];
 
-  filterClass = listIdClass?.map((key, index) => {
+  filterClass = listIdClass?.forEach((key, index) => {
     const listClass = { text: key.id, value: key.id };
 
     filterClass.push(listClass);
@@ -47,7 +47,7 @@ const TableSubject = () => {
   });
 
   const data = [];
-  listSubject.map((value, key) => {
+  listSubject.forEach((value, key) => {
     data.push({
       id: value.id,
       name: value.name,

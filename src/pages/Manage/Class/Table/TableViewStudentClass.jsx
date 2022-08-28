@@ -2,25 +2,29 @@ import React, { useState, useEffect } from "react";
 import { Space, Table, Button, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
-import { useSelector, useDispatch } from "react-redux";
-import classAction from "@/redux/action/class";
+import { useSelector, useDispatch, connect } from "react-redux";
+import {
+  activeAddStudentModal,
+  activeViewStudentClass,
+} from "@/redux/action/class";
 import studentAction from "@/redux/action/actionStudent";
 import ModalAddStudent from "../../Student/Modal/ModalAddStudent";
 
 const TableViewStudentClass = (props) => {
+  const { activeAddStudentModal } = props;
   //sort table
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
 
   useEffect(() => {}, [props]);
 
-  const infoStudentByIdClass = props.infoStudentByIdClass;
+  const infoStudentByIdClass = props?.infoStudentByIdClass;
   //data table
   var data = [];
 
   const classReducer = useSelector((state) => state.Class);
 
-  infoStudentByIdClass.map((value, key) => {
+  infoStudentByIdClass.forEach((value, key) => {
     data.push({
       id: value.id,
       name: value.name,
@@ -33,11 +37,9 @@ const TableViewStudentClass = (props) => {
   const dispatch = useDispatch();
 
   //modal
-  const handleCancel = () => {
+  const handleModalClose = () => {
     // dispatch(classAction.activeViewStudentClass(false));
-  };
-  const handleOk = () => {
-    // dispatch(classAction.activeViewStudentClass(false));
+    props.activeViewStudentClass(false);
   };
 
   const columns = [
@@ -93,17 +95,14 @@ const TableViewStudentClass = (props) => {
 
   const clearFilters = () => {
     setFilteredInfo({});
-    console.log("clear");
   };
 
   const clearAll = () => {
-    console.log("clear");
     setFilteredInfo({});
     setSortedInfo({});
   };
 
   const setAgeSort = () => {
-    console.log("clear");
     setSortedInfo({
       order: "descend",
       columnKey: "age",
@@ -111,7 +110,7 @@ const TableViewStudentClass = (props) => {
   };
 
   const addMoreStudentInClass = () => {
-    dispatch(studentAction.activeAddStudentModal(true));
+    props.activeAddStudentModal(true);
     console.log("123");
   };
 
@@ -119,8 +118,8 @@ const TableViewStudentClass = (props) => {
     <div>
       <Modal
         visible={classReducer.activeViewStudentClass}
-        onCancel={handleCancel}
-        onOk={handleOk}
+        onCancel={handleModalClose}
+        onOk={handleModalClose}
         width={1060}
         bodyStyle={{ padding: "2.6rem", alignItems: "center" }}
         title={
@@ -153,17 +152,16 @@ const TableViewStudentClass = (props) => {
           style={{ height: "100%", width: "100%" }}
           onChange={handleChangeTable}
           pagination={false}
-        >
-          {/* <Column title="ID" dataIndex="id" key="id" />
-          <Column title="Name" dataIndex="name" key="name" />
-          <Column title="Age" dataIndex="age" key="age" />
-          <Column title="Email" dataIndex="email" key="email" />
-          <Column title="Sex" dataIndex="sex" key="sex" /> */}
-        </Table>
+        ></Table>
       </Modal>
-      <ModalAddStudent></ModalAddStudent>
     </div>
   );
 };
 
-export default TableViewStudentClass;
+export default connect(
+  (store) => ({
+    listClass: store.Class.listClass,
+    onChangeInfoTable: store.Class.onChangeInfoTable,
+  }),
+  { activeViewStudentClass }
+)(TableViewStudentClass);

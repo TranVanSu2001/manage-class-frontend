@@ -10,15 +10,6 @@ import { DefaultLayoutWrapper, ContentWrapper } from "./style";
 
 const { Header, Footer, Sider } = Layout;
 
-function getItem(label, key, icon, children) {
-  return {
-    key,
-    icon,
-    children,
-    label,
-  };
-}
-
 const items = [
   {
     label: "Home",
@@ -59,7 +50,6 @@ const items = [
 
 const DefaultLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
-  const [activeKey, setActiveKey] = useState(null);
 
   return (
     <DefaultLayoutWrapper>

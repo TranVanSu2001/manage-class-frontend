@@ -4,8 +4,9 @@ import {
   SAVE_GET_LIST_CLASS,
   SET_MODAL_CLASS_OPEN,
   SET_SELECTED_CLASS,
-  SAVE_CREATE_CLASS
-
+  SAVE_CREATE_CLASS,
+  SAVE_UPDATE_CLASS,
+  CHANGE_INFO_TABLE,
 } from "../type";
 
 const initialState = {
@@ -14,6 +15,7 @@ const initialState = {
   selectedClass: {},
   activeViewModal: false,
   activeViewStudentClass: false,
+  onChangeInfoTable: false,
 };
 
 const classReducer = (state = initialState, action) => {
@@ -23,25 +25,32 @@ const classReducer = (state = initialState, action) => {
     case SAVE_GET_LIST_CLASS:
       return {
         ...state,
-        listClass: payload
+        listClass: payload,
       };
 
     case SET_MODAL_CLASS_OPEN:
       return {
         ...state,
-        isModalOpen: payload
+        isModalOpen: payload,
       };
 
     case SET_SELECTED_CLASS:
       return {
         ...state,
-        selectedClass: payload
+        selectedClass: payload,
       };
 
     case SAVE_CREATE_CLASS: {
       return {
         ...state,
-        listClass: [...state.listClass, payload]
+        listClass: [...state.listClass, payload],
+      };
+    }
+
+    case SAVE_UPDATE_CLASS: {
+      return {
+        ...state,
+        listClass: payload,
       };
     }
 
@@ -55,6 +64,12 @@ const classReducer = (state = initialState, action) => {
       return {
         ...state,
         activeViewStudentClass: payload,
+      };
+
+    case CHANGE_INFO_TABLE:
+      return {
+        ...state,
+        onChangeInfoTable: payload,
       };
 
     default:
