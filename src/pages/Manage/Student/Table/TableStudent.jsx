@@ -1,71 +1,47 @@
 import React, { useState, useEffect } from "react";
 import Axios from "axios";
 
-//ant design
 import { Space, Table, Button } from "antd";
 import { message, Popconfirm } from "antd";
 
-import "antd/dist/antd.css";
+import { connect } from "react-redux";
 import {
-  EditOutlined,
-  DeleteOutlined,
-  UnorderedListOutlined,
-} from "@ant-design/icons";
+  activeEditStudentModal,
+  getListStudent,
+  saveSelectedStudent,
+  activeAddStudentModal,
+  activeViewStudentModal,
+  saveReceiveMail,
+} from "@/redux/action/student";
 
-import ModalEditStudent from "../Modal/ModalEditStudent";
+import { actChangeInfoTable } from "@/redux/action/class";
+
+import "antd/dist/antd.css";
+import { EditOutlined, DeleteOutlined, MailOutlined } from "@ant-design/icons";
 
 //redux
-import { useDispatch } from "react-redux";
-import studentAction from "@/redux/action/actionStudent";
-import ModalViewStudent from "../Modal/ModalViewStudent";
+// import studentAction from "@/redux/action/student";
+import ModalSendMail from "../Modal/ModalSendMail";
 
-const { Column } = Table;
-
-const TableStudent = () => {
-  //redux
-  const dispatch = useDispatch();
-
-  const [listStudent, setListStudent] = useState([]);
-  //view class info
-  const [infoStudent, setInfoStudent] = useState({});
-  const [listIdClass, setListIdClass] = useState([]);
-  const [listClass, setListClass] = useState([]);
-
-  var optionClassFilter = {};
+const TableStudent = (props) => {
+  const { listStudent, listIdClass, onChangeInfoTable } = props;
 
   //get details class to show
   useEffect(() => {
-    Axios.get("http://localhost:3002/student/getStudent").then((data) => {
-      setListStudent(data.data);
+    Axios.get("http://localhost:3002/student").then((res) => {
+      props.getListStudent(res.data.data);
     });
-  }, [listStudent]);
-
-  useEffect(() => {
-    Axios.get("http://localhost:3002/class/getListId").then((response) => {
-      setListIdClass(response.data);
-    });
-  }, [listIdClass]);
+  }, [onChangeInfoTable]);
 
   var filterClass = [];
-  // console.log("list id", listIdClass);
   var listIdClassFiltter = [];
 
   filterClass = listIdClass?.forEach((key, index) => {
-    // console.log({ text: key.id, value: key.id });
-    // filterClass.push({ text: key.id, value: key.id });
     const listClass = { text: key.id, value: key.id };
 
     filterClass.push(listClass);
     listIdClassFiltter = filterClass;
-
-    // console.log("filter1", filterClass);
   });
-
-  // console.log("listid" + listIdClass[1]);
-
-  // console.log("filterClass: " + filterClass);
-
-  // console.log("optionClassFilterChoice", optionClassFilterChoice);
 
   const data = [];
   listStudent.forEach((value, key) => {
@@ -80,55 +56,35 @@ const TableStudent = () => {
   });
 
   //function edit, view Modal
-  const editStudent = (idEdit) => {
-    Axios.post("http://localhost:3002/student/getInfoById", {
-      idEdit: idEdit,
-    })
-
-      .then((response) => {
-        setInfoStudent(response.data[0]);
-      })
-      .catch((error) => {
-        console.log("error: " + error);
-      });
-
-    dispatch(studentAction.activeEditStudentModal(true));
+  const editStudent = (infoStudent) => {
+    props.saveSelectedStudent(infoStudent);
+    props.activeAddStudentModal(true);
   };
 
   //delete function
   //notication delete
 
   const deleteStudent = (idDelete) => {
-    Axios.post("http://localhost:3002/student/deleteStudent", {
+    Axios.delete(`http://localhost:3002/student/${idDelete}`, {
       idDelete: idDelete,
     });
+    props.actChangeInfoTable(!onChangeInfoTable);
   };
 
-  const confirm = (idDelete) => {
-    message.success("Delete success!");
+  const confirmDelete = (idDelete) => {
     deleteStudent(idDelete);
+    message.success("Delete success!");
   };
 
   const cancel = (e) => {
     message.error("Cancel delete!");
   };
 
-  //function view student
-  const viewStudent = (idEdit) => {
-    Axios.post("http://localhost:3002/student/getInfoById", {
-      idEdit: idEdit,
-    })
-
-      .then((response) => {
-        setInfoStudent(response.data[0]);
-      })
-      .catch((error) => {
-        console.log("error: " + error);
-      });
-    dispatch(studentAction.activeViewStudentModal(true));
+  //function send mail to student
+  const sendMailToStudent = (receiveMail) => {
+    props.saveReceiveMail(receiveMail);
+    props.activeViewStudentModal(true);
   };
-
-  //data table
 
   //sort table
   const [filteredInfo, setFilteredInfo] = useState({});
@@ -138,27 +94,6 @@ const TableStudent = () => {
     setFilteredInfo(filters);
     setSortedInfo(sorter);
   };
-
-  const clearFilters = () => {
-    setFilteredInfo({});
-    console.log("clear");
-  };
-
-  const clearAll = () => {
-    console.log("clear");
-    setFilteredInfo({});
-    setSortedInfo({});
-  };
-
-  const setAgeSort = () => {
-    console.log("clear");
-    setSortedInfo({
-      order: "descend",
-      columnKey: "age",
-    });
-  };
-
-  // console.log("filterClass", filterClass);
 
   const columns = [
     {
@@ -221,7 +156,7 @@ const TableStudent = () => {
     {
       title: "Action",
       key: "action",
-      render: (_, info) => (
+      render: (_, infoStudent) => (
         <Space size="middle">
           <Button
             type="primary"
@@ -229,7 +164,7 @@ const TableStudent = () => {
             size="small"
             style={{ margin: "0 10px" }}
             onClick={() => {
-              editStudent(info.id);
+              editStudent(infoStudent);
             }}
           >
             Edit
@@ -242,7 +177,7 @@ const TableStudent = () => {
           >
             <Popconfirm
               title="Are you sure to delete this task?"
-              onConfirm={() => confirm(info.id)}
+              onConfirm={() => confirmDelete(infoStudent.id)}
               onCancel={cancel}
               okText="Yes"
               cancelText="No"
@@ -258,11 +193,11 @@ const TableStudent = () => {
           </Button>
           <Button
             type="primary"
-            icon={<UnorderedListOutlined />}
+            icon={<MailOutlined />}
             size="small"
-            onClick={() => viewStudent(info.id)}
+            onClick={() => sendMailToStudent(infoStudent.email)}
           >
-            View
+            Mail
           </Button>
         </Space>
       ),
@@ -271,18 +206,29 @@ const TableStudent = () => {
   ];
   return (
     <div>
-      <div>
-        <Button onClick={clearAll}>Clear filters and sorters</Button>
-      </div>
       <Table
         dataSource={data}
         columns={columns}
         onChange={handleChangeTable}
       ></Table>
-      <ModalEditStudent infoStudent={infoStudent} />
-      <ModalViewStudent infoStudent={infoStudent} />
+      <ModalSendMail />
     </div>
   );
 };
 
-export default TableStudent;
+export default connect(
+  (store) => ({
+    listStudent: store.Student.listStudent,
+    listIdClass: store.Class.listIdClass,
+    onChangeInfoTable: store.Class.onChangeInfoTable,
+  }),
+  {
+    activeEditStudentModal,
+    getListStudent,
+    saveSelectedStudent,
+    activeAddStudentModal,
+    actChangeInfoTable,
+    activeViewStudentModal,
+    saveReceiveMail,
+  }
+)(TableStudent);

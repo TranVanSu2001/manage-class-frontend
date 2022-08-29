@@ -1,22 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Space, Table, Button, Modal } from "antd";
+import React, { useState } from "react";
+import { Table, Button, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
-import { useSelector, useDispatch, connect } from "react-redux";
-import {
-  activeAddStudentModal,
-  activeViewStudentClass,
-} from "@/redux/action/class";
-import studentAction from "@/redux/action/actionStudent";
-import ModalAddStudent from "../../Student/Modal/ModalAddStudent";
+import { useSelector, connect } from "react-redux";
+import { activeViewStudentClass } from "@/redux/action/class";
 
 const TableViewStudentClass = (props) => {
-  const { activeAddStudentModal } = props;
   //sort table
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
-
-  useEffect(() => {}, [props]);
 
   const infoStudentByIdClass = props?.infoStudentByIdClass;
   //data table
@@ -33,8 +25,6 @@ const TableViewStudentClass = (props) => {
       sex: value.sex,
     });
   });
-
-  const dispatch = useDispatch();
 
   //modal
   const handleModalClose = () => {
@@ -93,22 +83,6 @@ const TableViewStudentClass = (props) => {
     setSortedInfo(sorter);
   };
 
-  const clearFilters = () => {
-    setFilteredInfo({});
-  };
-
-  const clearAll = () => {
-    setFilteredInfo({});
-    setSortedInfo({});
-  };
-
-  const setAgeSort = () => {
-    setSortedInfo({
-      order: "descend",
-      columnKey: "age",
-    });
-  };
-
   const addMoreStudentInClass = () => {
     props.activeAddStudentModal(true);
     console.log("123");
@@ -128,20 +102,10 @@ const TableViewStudentClass = (props) => {
             : `Student in class ${infoStudentByIdClass[0].classID}`
         }
       >
-        <Space
-          style={{
-            marginBottom: 16,
-            // display: "none",
-          }}
-        >
-          <Button onClick={setAgeSort}>Sort age</Button>
-          <Button onClick={clearFilters}>Clear filters</Button>
-          <Button onClick={clearAll}>Clear filters and sorters</Button>
-        </Space>
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          style={{ margin: "0 10px" }}
+          style={{ margin: "10px 10px" }}
           onClick={addMoreStudentInClass}
         >
           Add more

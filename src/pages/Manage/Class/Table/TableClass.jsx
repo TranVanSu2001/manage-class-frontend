@@ -97,8 +97,6 @@ const getColumns = (
 const TableClass = (props) => {
   const { listClass, onChangeInfoTable } = props;
 
-  const [infoClass, setInfoClass] = useState({});
-  const [isModalOpen, setModalOpen] = useState({});
   const [infoStudentByIdClass, setInfoStudentByClass] = useState([]);
   //get details class to show
   useEffect(() => {
@@ -165,7 +163,6 @@ const TableClass = (props) => {
         )}
       />
 
-      {/* <ModalViewClass infoClass={infoClass} isModalOpen={isModalOpen} /> */}
       <TableViewStudentClass infoStudentByIdClass={infoStudentByIdClass} />
     </div>
   );

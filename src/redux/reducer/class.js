@@ -7,6 +7,7 @@ import {
   SAVE_CREATE_CLASS,
   SAVE_UPDATE_CLASS,
   CHANGE_INFO_TABLE,
+  GET_LIST_ID_CLASS,
 } from "../type";
 
 const initialState = {
@@ -16,6 +17,7 @@ const initialState = {
   activeViewModal: false,
   activeViewStudentClass: false,
   onChangeInfoTable: false,
+  listIdClass: [],
 };
 
 const classReducer = (state = initialState, action) => {
@@ -71,7 +73,11 @@ const classReducer = (state = initialState, action) => {
         ...state,
         onChangeInfoTable: payload,
       };
-
+    case GET_LIST_ID_CLASS:
+      return {
+        ...state,
+        listIdClass: payload,
+      };
     default:
       return state;
   }

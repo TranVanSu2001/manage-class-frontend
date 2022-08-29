@@ -1,37 +1,23 @@
-import React, { useState } from "react";
+import React from "react";
 import TableStudent from "./Table/TableStudent";
 
-//ant design
-import { PlusOutlined, UnorderedListOutlined } from "@ant-design/icons";
-import { Button, Modal } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import { Button } from "antd";
 import {
   StudentWrapper,
   StudentTitle,
   StudentContainer,
   ButtonAction,
-  ButtonFunc,
 } from "./style";
 
-//redux
-import { useSelector, useDispatch } from "react-redux";
-import studentAction from "@/redux/action/actionStudent";
+import { activeAddStudentModal } from "@/redux/action/student";
+import { connect } from "react-redux";
 
-import ModalAddStudent from "./Modal/ModalAddStudent";
+import ModalAddEditStudent from "./Modal/ModalAddEditStudent";
 
-const Student = () => {
-  //redux
-  const dispatch = useDispatch();
-
-  const showModal = () => {
-    dispatch(studentAction.activeAddStudentModal(true));
-  };
-
-  const handleOk = () => {
-    dispatch(studentAction.activeAddStudentModal(false));
-  };
-
-  const handleCancel = () => {
-    dispatch(studentAction.activeAddStudentModal(false));
+const Student = (props) => {
+  const showAddModal = () => {
+    props.activeAddStudentModal(true);
   };
 
   return (
@@ -42,11 +28,11 @@ const Student = () => {
           type="primary"
           icon={<PlusOutlined />}
           style={{ margin: "0 10px" }}
-          onClick={showModal}
+          onClick={showAddModal}
         >
           Add
         </Button>
-        <ModalAddStudent />
+        <ModalAddEditStudent />
       </ButtonAction>
       <StudentContainer>
         <TableStudent />
@@ -55,4 +41,4 @@ const Student = () => {
   );
 };
 
-export default Student;
+export default connect((store) => ({}), { activeAddStudentModal })(Student);

@@ -7,44 +7,25 @@ import "antd/dist/antd.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 //redux
-import { useDispatch } from "react-redux";
-import subjectAction from "@/redux/action/actionSubject";
+import { connect } from "react-redux";
+import {
+  activeAddSubjectModal,
+  setListSubject,
+  saveSelectedSubject,
+} from "@/redux/action/subject";
+import { actChangeInfoTable } from "@/redux/action/class";
 
-import ModalEditSubject from "../Modal/ModalEditSubject";
-
-const TableSubject = () => {
+const TableSubject = (props) => {
   //redux
-  const dispatch = useDispatch();
-
-  const [listSubject, setListSubject] = useState([]);
+  const { listSubject, onChangeInfoTable } = props;
   //view class info
-  const [listIdClass, setListIdClass] = useState([]);
-
-  const [infomationSubjectById, setInfomationSubjectById] = useState([]);
 
   //get details class to show
   useEffect(() => {
-    Axios.get("http://localhost:3002/subject/getSubject").then((data) => {
-      setListSubject(data.data);
+    Axios.get("http://localhost:3002/subject").then((res) => {
+      props.setListSubject(res.data.data);
     });
-  }, [listSubject]);
-
-  useEffect(() => {
-    Axios.get("http://localhost:3002/class/getListId").then((response) => {
-      setListIdClass(response.data);
-    });
-  }, [listIdClass]);
-
-  var filterClass = [];
-  // console.log("list id", listIdClass);
-  var listIdClassFiltter = [];
-
-  filterClass = listIdClass?.forEach((key, index) => {
-    const listClass = { text: key.id, value: key.id };
-
-    filterClass.push(listClass);
-    listIdClassFiltter = filterClass;
-  });
+  }, [onChangeInfoTable]);
 
   const data = [];
   listSubject.forEach((value, key) => {
@@ -57,43 +38,29 @@ const TableSubject = () => {
     });
   });
 
-  // console.log("data", data);
-
   //function edit, view Modal
-  const editSubject = (idEdit) => {
-    Axios.post("http://localhost:3002/subject/getInfoById", {
-      idEdit: idEdit,
-    })
-      .then((response) => {
-        setInfomationSubjectById(response.data[0]);
-      })
-      .catch((error) => {
-        console.log("error: " + error);
-      });
-
-    dispatch(subjectAction.activeEditSubjectModal(true));
+  const editSubject = (infoSubject) => {
+    props.saveSelectedSubject(infoSubject);
+    props.activeAddSubjectModal(true);
   };
 
   //delete function
-  //notication delete
-
   const deleteSubject = (idDelete) => {
-    Axios.post("http://localhost:3002/subject/deleteSubject", {
+    Axios.delete(`http://localhost:3002/subject/${idDelete}`, {
       idDelete: idDelete,
     });
+
+    props.actChangeInfoTable(!onChangeInfoTable);
   };
 
-  const confirm = (idDelete) => {
-    console.log("id delete", idDelete);
-    message.success("Delete success!");
+  const confirmDelete = (idDelete) => {
     deleteSubject(idDelete);
+    message.success("Delete success!");
   };
 
-  const cancel = (e) => {
+  const cancelDelete = (e) => {
     message.error("Cancel delete!");
   };
-
-  //data table
 
   //sort table
   const [filteredInfo, setFilteredInfo] = useState({});
@@ -103,27 +70,6 @@ const TableSubject = () => {
     setFilteredInfo(filters);
     setSortedInfo(sorter);
   };
-
-  const clearFilters = () => {
-    setFilteredInfo({});
-    console.log("clear");
-  };
-
-  const clearAll = () => {
-    console.log("clear");
-    setFilteredInfo({});
-    setSortedInfo({});
-  };
-
-  const setAgeSort = () => {
-    console.log("clear");
-    setSortedInfo({
-      order: "descend",
-      columnKey: "age",
-    });
-  };
-
-  // console.log("filterClass", filterClass);
 
   const columns = [
     {
@@ -165,7 +111,7 @@ const TableSubject = () => {
     {
       title: "Action",
       key: "action",
-      render: (_, info) => (
+      render: (_, infoSubject) => (
         <Space size="middle">
           <Button
             type="primary"
@@ -173,7 +119,7 @@ const TableSubject = () => {
             size="small"
             style={{ margin: "0 10px" }}
             onClick={() => {
-              editSubject(info.id);
+              editSubject(infoSubject);
             }}
           >
             Edit
@@ -186,8 +132,8 @@ const TableSubject = () => {
           >
             <Popconfirm
               title="Are you sure to delete this task?"
-              onConfirm={() => confirm(info.id)}
-              onCancel={cancel}
+              onConfirm={() => confirmDelete(infoSubject.id)}
+              onCancel={cancelDelete}
               okText="Yes"
               cancelText="No"
             >
@@ -207,17 +153,25 @@ const TableSubject = () => {
   ];
   return (
     <div>
-      <div>
-        <Button onClick={clearAll}>Clear filters and sorters</Button>
-      </div>
       <Table
         dataSource={data}
         columns={columns}
         onChange={handleChangeTable}
       ></Table>
-      <ModalEditSubject infomationSubjectById={infomationSubjectById} />
     </div>
   );
 };
 
-export default TableSubject;
+export default connect(
+  (store) => ({
+    onChangeInfoTable: store.Class.onChangeInfoTable,
+    activeAddModal: store.Subject.activeAddModal,
+    listSubject: store.Subject.listSubject,
+  }),
+  {
+    activeAddSubjectModal,
+    setListSubject,
+    actChangeInfoTable,
+    saveSelectedSubject,
+  }
+)(TableSubject);

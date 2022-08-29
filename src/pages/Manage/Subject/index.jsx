@@ -12,20 +12,16 @@ import {
 } from "./style";
 
 //redux
-import { useDispatch, useSelector } from "react-redux";
-import subjectAction from "@/redux/action/actionSubject";
+import { connect } from "react-redux";
+import { activeAddSubjectModal } from "@/redux/action/subject";
 
 import TableSubject from "./Table/TableSubject";
 
-import ModalAddSubject from "@/pages/Manage/Subject/Modal/ModalAddSubject";
+import ModalAddEditSubject from "@/pages/Manage/Subject/Modal/ModalAddEditSubject";
 
-const Subject = () => {
-  //redux
-  const dispatch = useDispatch();
-  const classReducer = useSelector((state) => state.Class);
-
+const Subject = (props) => {
   const showModal = () => {
-    dispatch(subjectAction.activeAddSubjectModal(true));
+    props.activeAddSubjectModal(true);
   };
 
   return (
@@ -40,7 +36,7 @@ const Subject = () => {
         >
           Add
         </Button>
-        <ModalAddSubject />
+        <ModalAddEditSubject />
       </ButtonAction>
       <SubjectContainer>
         <TableSubject />
@@ -49,4 +45,4 @@ const Subject = () => {
   );
 };
 
-export default Subject;
+export default connect((store) => ({}), { activeAddSubjectModal })(Subject);
