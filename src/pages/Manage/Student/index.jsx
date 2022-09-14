@@ -5,35 +5,40 @@ import { PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import {
   StudentWrapper,
-  StudentTitle,
+  PageHeadingWrapper,
   StudentContainer,
   ButtonAction,
 } from "./style";
 
-import { activeAddStudentModal } from "@/redux/action/student";
+import { actSetModalStudentOpen } from "@/redux/action/student";
 import { connect } from "react-redux";
 
 import ModalAddEditStudent from "./Modal/ModalAddEditStudent";
 
 const Student = (props) => {
   const showAddModal = () => {
-    props.activeAddStudentModal(true);
+    props.actSetModalStudentOpen(true);
   };
 
   return (
     <StudentWrapper>
-      <StudentTitle>Manage Student</StudentTitle>
+      <PageHeadingWrapper>
+        <div className="heading">Manage Student</div>
+      </PageHeadingWrapper>
+
       <ButtonAction>
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          style={{ margin: "0 10px" }}
+          style={{ marginBottom: "1rem" }}
           onClick={showAddModal}
         >
           Add
         </Button>
+
         <ModalAddEditStudent />
       </ButtonAction>
+
       <StudentContainer>
         <TableStudent />
       </StudentContainer>
@@ -41,4 +46,4 @@ const Student = (props) => {
   );
 };
 
-export default connect((store) => ({}), { activeAddStudentModal })(Student);
+export default connect((store) => ({}), { actSetModalStudentOpen })(Student);

@@ -6,7 +6,6 @@ import {
   SET_SELECTED_CLASS,
   SAVE_CREATE_CLASS,
   SAVE_UPDATE_CLASS,
-  CHANGE_INFO_TABLE,
   GET_LIST_ID_CLASS,
 } from "../type";
 
@@ -42,11 +41,6 @@ export const actSaveUpdateClass = (payload) => ({
 
 export const activeViewStudentClass = (payload) => ({
   type: SET_VIEW_STUDENT_IN_CLASS,
-  payload,
-});
-
-export const actChangeInfoTable = (payload) => ({
-  type: CHANGE_INFO_TABLE,
   payload,
 });
 

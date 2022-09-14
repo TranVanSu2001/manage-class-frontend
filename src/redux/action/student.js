@@ -1,57 +1,46 @@
 import {
-  SET_ADD_STUDENT_MODAL,
-  SET_EDIT_STUDENT_MODAL,
-  SET_VIEW_STUDENT_MODAL,
+  SET_MODAL_STUDENT_OPEN,
   SAVE_GET_LIST_STUDENT,
-  SAVE_SELECTED_STUDENT,
-  GET_LIST_ID_STUDENT,
+  SET_SELECTED_STUDENT,
   SAVE_CREATE_STUDENT,
   SAVE_RECEIVE_MAIL,
   SAVE_SUBJECT_MAIL,
+  SAVE_UPDATE_STUDENT,
 } from "../type";
 
-//get all list student
-export const getListStudent = (payload) => ({
+export const actSaveGetListStudent = (payload) => ({
   type: SAVE_GET_LIST_STUDENT,
   payload,
 });
 
-export const activeAddStudentModal = (payload) => ({
-  type: SET_ADD_STUDENT_MODAL,
+export const actSetModalStudentOpen = (payload) => ({
+  type: SET_MODAL_STUDENT_OPEN,
   payload,
 });
 
-export const activeEditStudentModal = (payload) => ({
-  type: SET_EDIT_STUDENT_MODAL,
+export const actSetSelectedStudent = (payload) => ({
+  type: SET_SELECTED_STUDENT,
   payload,
 });
 
-export const activeViewStudentModal = (payload) => ({
-  type: SET_VIEW_STUDENT_MODAL,
-  payload,
-});
 
-export const saveSelectedStudent = (payload) => ({
-  type: SAVE_SELECTED_STUDENT,
-  payload,
-});
 
-export const getListIdStudent = (payload) => ({
-  type: GET_LIST_ID_STUDENT,
-  payload,
-});
-
-export const saveCreateStudent = (payload) => ({
+export const actSaveCreateStudent = (payload) => ({
   type: SAVE_CREATE_STUDENT,
   payload,
 });
 
-export const saveReceiveMail = (payload) => ({
+export const actSaveUpdateStudent = (payload) => ({
+  type: SAVE_UPDATE_STUDENT,
+  payload,
+});
+
+export const actSaveReceiveMail = (payload) => ({
   type: SAVE_RECEIVE_MAIL,
   payload,
 });
 
-export const saveSubjectMail = (payload) => ({
+export const actSaveSubjectMail = (payload) => ({
   type: SAVE_SUBJECT_MAIL,
   payload,
 });

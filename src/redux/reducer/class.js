@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import {
   SET_VIEW_CLASS_MODAL,
   SET_VIEW_STUDENT_IN_CLASS,
@@ -6,17 +7,16 @@ import {
   SET_SELECTED_CLASS,
   SAVE_CREATE_CLASS,
   SAVE_UPDATE_CLASS,
-  CHANGE_INFO_TABLE,
   GET_LIST_ID_CLASS,
 } from "../type";
+import { findAndUpdate } from '../util';
 
 const initialState = {
   listClass: [],
   isModalOpen: false,
   selectedClass: {},
   activeViewModal: false,
-  activeViewStudentClass: false,
-  onChangeInfoTable: false,
+  activeViewClassClass: false,
   listIdClass: [],
 };
 
@@ -52,7 +52,7 @@ const classReducer = (state = initialState, action) => {
     case SAVE_UPDATE_CLASS: {
       return {
         ...state,
-        listClass: payload,
+        listClass: findAndUpdate(state.listClass, payload),
       };
     }
 
@@ -65,14 +65,9 @@ const classReducer = (state = initialState, action) => {
     case SET_VIEW_STUDENT_IN_CLASS:
       return {
         ...state,
-        activeViewStudentClass: payload,
+        activeViewClassClass: payload,
       };
 
-    case CHANGE_INFO_TABLE:
-      return {
-        ...state,
-        onChangeInfoTable: payload,
-      };
     case GET_LIST_ID_CLASS:
       return {
         ...state,

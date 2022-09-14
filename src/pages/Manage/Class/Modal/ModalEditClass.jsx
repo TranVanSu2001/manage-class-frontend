@@ -9,19 +9,16 @@ import {
   actSaveCreateClass,
   actSaveUpdateClass,
   actSaveGetListClass,
-  actChangeInfoTable,
 } from "@/redux/action/class";
 
 const ModalAddClass = (props) => {
-  //select from redux
-  const { isModalOpen, selectedClass, listClass, onChangeInfoTable } = props;
+  const { isModalOpen, selectedClass } = props;
   const [form] = Form.useForm();
 
   const isCreateMode = useMemo(() => {
     return _.isEmpty(selectedClass);
   }, [selectedClass]);
 
-  //validate form to get input value
   useEffect(() => {
     form.setFieldsValue({
       id: selectedClass?.id,
@@ -43,8 +40,8 @@ const ModalAddClass = (props) => {
       numberOfStudent,
     };
 
-    //add info class
     if (isCreateMode) {
+      // create class
       Axios.post("http://localhost:3002/class", {
         id,
         name,
@@ -52,58 +49,36 @@ const ModalAddClass = (props) => {
       }).then((res) => {
         if (res?.data?.code === 200) {
           props.actSaveCreateClass(requestBody);
-          props.actSetModalClassOpen(false);
-          noticationAddClass("success", "Add class successfully");
+          onCloseModal();
+          onShowNotifcation("success", "Add class successfully");
         } else if (res?.data.code === 304) {
-          noticationAddClass("error", "Exist class id");
-          props.actSetModalClassOpen(false);
+          onShowNotifcation("error", "Class existed");
         }
       });
-
-      //edit info selected class
     } else {
+      // update class
       Axios.put("http://localhost:3002/class", {
         id,
         name,
         numberOfStudent,
       }).then((res) => {
         if (res?.data?.code === 200) {
-          // TODO: implement action, reducer for update
-
-          listClass.forEach((classElement) => {
-            if (classElement.id === id) {
-              classElement.name = name;
-              classElement.numberOfStudent = numberOfStudent;
-            }
-          });
-
-          // props.actSaveGetListClass([]);
-          props.actChangeInfoTable(!onChangeInfoTable);
-          props.actSaveGetListClass(listClass);
-          props.actSetModalClassOpen(false);
-          noticationAddClass("success", "Edit class successfully");
+          props.actSaveUpdateClass(requestBody);
+          onCloseModal();
+          onShowNotifcation("success", "Edit class successfully");
         } else if (res?.data?.code === 400) {
-          props.actSetModalClassOpen(false);
-          noticationAddClass("success", "Edit class successfully");
+          onShowNotifcation("error", "Error occur when edit class");
         }
       });
     }
-
-    // //reset form aftet submit
-    form.setFieldsValue({
-      id: "",
-      name: "",
-      numberOfStudent: "",
-    });
   };
 
-  const handleCancelModal = () => {
+  const onCloseModal = () => {
+    props.actSetSelectedClass({});
     props.actSetModalClassOpen(false);
-    props.actSetSelectedClass(null);
   };
 
-  //show notication after add successfully
-  const noticationAddClass = (type, messages) => {
+  const onShowNotifcation = (type, messages) => {
     notification[type]({
       message: messages,
       description: "",
@@ -116,9 +91,9 @@ const ModalAddClass = (props) => {
       title={isCreateMode ? "Add Class" : "Update Class"}
       visible={isModalOpen}
       onOk={onSubmitForm}
-      onCancel={handleCancelModal}
+      onCancel={onCloseModal}
       okText={isCreateMode ? "Add" : "Update"}
-      width="30rem"
+      width="25rem"
     >
       <Form layout="vertical" form={form}>
         <Form.Item
@@ -173,8 +148,6 @@ export default connect(
   (store) => ({
     isModalOpen: store.Class.isModalOpen,
     selectedClass: store.Class.selectedClass,
-    listClass: store.Class.listClass,
-    onChangeInfoTable: store.Class.onChangeInfoTable,
   }),
   {
     actSetModalClassOpen,
@@ -182,6 +155,5 @@ export default connect(
     actSaveCreateClass,
     actSaveUpdateClass,
     actSaveGetListClass,
-    actChangeInfoTable,
   }
 )(ModalAddClass);

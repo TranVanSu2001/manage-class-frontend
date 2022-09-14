@@ -1,22 +1,19 @@
 import {
-  SET_ADD_STUDENT_MODAL,
-  SET_EDIT_STUDENT_MODAL,
-  SET_VIEW_STUDENT_MODAL,
+  SET_MODAL_STUDENT_OPEN,
   SAVE_GET_LIST_STUDENT,
-  SAVE_SELECTED_STUDENT,
-  GET_LIST_ID_STUDENT,
+  SET_SELECTED_STUDENT,
   SAVE_CREATE_STUDENT,
   SAVE_RECEIVE_MAIL,
   SAVE_SUBJECT_MAIL,
+  SAVE_UPDATE_STUDENT,
 } from "../type";
+import { findAndUpdate } from '../util';
 
 const initialState = {
   listStudent: [],
-  activeAddModal: false,
-  activeEditModal: false,
-  activeViewModal: false,
+  isModalOpen: false,
+  isModalSendEmailOpen: false,
   selectedStudent: {},
-  listIdStudent: [],
   receiveMail: "",
   subjectMail: "",
 };
@@ -25,22 +22,10 @@ const studentReducer = (state = initialState, action) => {
   const { type, payload } = action;
 
   switch (type) {
-    case SET_ADD_STUDENT_MODAL:
+    case SET_MODAL_STUDENT_OPEN:
       return {
         ...state,
-        activeAddModal: payload,
-      };
-
-    case SET_EDIT_STUDENT_MODAL:
-      return {
-        ...state,
-        activeEditModal: payload,
-      };
-
-    case SET_VIEW_STUDENT_MODAL:
-      return {
-        ...state,
-        activeViewModal: payload,
+        isModalOpen: payload,
       };
 
     case SAVE_GET_LIST_STUDENT:
@@ -49,16 +34,10 @@ const studentReducer = (state = initialState, action) => {
         listStudent: payload,
       };
 
-    case SAVE_SELECTED_STUDENT:
+    case SET_SELECTED_STUDENT:
       return {
         ...state,
         selectedStudent: payload,
-      };
-
-    case GET_LIST_ID_STUDENT:
-      return {
-        ...state,
-        listIdStudent: payload,
       };
 
     case SAVE_CREATE_STUDENT:
@@ -66,6 +45,13 @@ const studentReducer = (state = initialState, action) => {
         ...state,
         listStudent: [...state.listStudent, payload],
       };
+
+    case SAVE_UPDATE_STUDENT: {
+      return {
+        ...state,
+        listStudent: findAndUpdate(state.listStudent, payload),
+      };
+    }
 
     case SAVE_RECEIVE_MAIL:
       return {

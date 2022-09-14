@@ -13,7 +13,6 @@ import {
   setListSubject,
   saveSelectedSubject,
 } from "@/redux/action/subject";
-import { actChangeInfoTable } from "@/redux/action/class";
 
 const TableSubject = (props) => {
   //redux
@@ -49,8 +48,6 @@ const TableSubject = (props) => {
     Axios.delete(`http://localhost:3002/subject/${idDelete}`, {
       idDelete: idDelete,
     });
-
-    props.actChangeInfoTable(!onChangeInfoTable);
   };
 
   const confirmDelete = (idDelete) => {
@@ -171,7 +168,6 @@ export default connect(
   {
     activeAddSubjectModal,
     setListSubject,
-    actChangeInfoTable,
     saveSelectedSubject,
   }
 )(TableSubject);

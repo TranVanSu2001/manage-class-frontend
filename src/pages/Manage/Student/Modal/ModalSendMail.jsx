@@ -4,13 +4,10 @@ import axios from "axios";
 import { Modal, Form, Input, notification } from "antd";
 
 import { connect } from "react-redux";
-import {
-  activeViewStudentModal,
-  saveSubjectMail,
-} from "@/redux/action/student";
+import { actSaveSubjectMail } from "@/redux/action/student";
 
 const ModalSendMail = (props) => {
-  const { activeViewModal, receiveMail } = props;
+  const { isModalSendEmailOpen, receiveMail } = props;
   const [form] = Form.useForm();
   const [loadings, setLoadings] = useState([]);
 
@@ -50,7 +47,6 @@ const ModalSendMail = (props) => {
         subject: "",
         content: "",
       });
-      props.activeViewStudentModal(false);
     }, 2000);
   };
 
@@ -60,7 +56,6 @@ const ModalSendMail = (props) => {
       subject: "",
       content: "",
     });
-    props.activeViewStudentModal(false);
   };
 
   const noticationSendMail = (type, messages) => {
@@ -73,7 +68,7 @@ const ModalSendMail = (props) => {
   return (
     <Modal
       title="Send mail to student"
-      visible={activeViewModal}
+      visible={isModalSendEmailOpen}
       onCancel={onCancelSendMail}
       onOk={onHandleSendMail}
       okText="Mail"
@@ -82,16 +77,7 @@ const ModalSendMail = (props) => {
         loading: loadings[0],
       }}
     >
-      <Form
-        name="basic"
-        labelCol={{
-          span: 8,
-        }}
-        wrapperCol={{
-          span: 16,
-        }}
-        form={form}
-      >
+      <Form layout="vertical" form={form}>
         <Form.Item label="From">
           <Input value="tranvansu2001@gmail.com" disabled={true} />
         </Form.Item>
@@ -133,9 +119,9 @@ const ModalSendMail = (props) => {
 
 export default connect(
   (store) => ({
-    activeViewModal: store.Student.activeViewModal,
+    isModalSendEmailOpen: store.Student.isModalSendEmailOpen,
     receiveMail: store.Student.receiveMail,
     subjectMail: store.Student.subjectMail,
   }),
-  { activeViewStudentModal, saveSubjectMail }
+  { actSaveSubjectMail }
 )(ModalSendMail);

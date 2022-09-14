@@ -84,7 +84,7 @@ const TableViewStudentClass = (props) => {
   };
 
   const addMoreStudentInClass = () => {
-    props.activeAddStudentModal(true);
+    props.actSetModalStudentOpen(true);
     console.log("123");
   };
 
