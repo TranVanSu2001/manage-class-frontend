@@ -12,7 +12,7 @@ import {
   activeAddSubjectModal,
   saveSelectedSubject,
 } from "@/redux/action/subject";
-import { setListIdClass, actChangeInfoTable } from "@/redux/action/class";
+import { setListIdClass } from "@/redux/action/class";
 
 const ModalAddEditSubject = (props) => {
   const dateFormat = "DD/MM/YYYY";
@@ -112,7 +112,6 @@ const ModalAddEditSubject = (props) => {
     setClassID("Select");
     setValuePickTime([null, null]);
 
-    props.actChangeInfoTable(!onChangeInfoTable);
     props.activeAddSubjectModal(false);
   };
 
@@ -239,7 +238,6 @@ export default connect(
     getListIdSubject,
     activeAddSubjectModal,
     setListIdClass,
-    actChangeInfoTable,
     saveSelectedSubject,
   }
 )(ModalAddEditSubject);

@@ -13,11 +13,9 @@ import {
   actSaveGetListClass,
   actSetModalClassOpen,
   actSetSelectedClass,
-  actChangeInfoTable,
   activeViewStudentClass,
 } from "@/redux/action/class";
 import TableViewStudentClass from "./TableViewStudentClass";
-// import ModalViewClass from "../Modal/ModalViewClass";
 
 const getColumns = (
   onEditClass,
@@ -95,15 +93,18 @@ const getColumns = (
 ];
 
 const TableClass = (props) => {
-  const { listClass, onChangeInfoTable } = props;
-
+  const { listClass } = props;
   const [infoStudentByIdClass, setInfoStudentByClass] = useState([]);
-  //get details class to show
+
   useEffect(() => {
+    onGetListClass();
+  }, []);
+
+  const onGetListClass = () => {
     axios.get("http://localhost:3002/class").then((res) => {
       props.actSaveGetListClass(res?.data?.data || []);
     });
-  }, [onChangeInfoTable]);
+  };
 
   const data = [];
   listClass.forEach((value, key) => {
@@ -120,10 +121,16 @@ const TableClass = (props) => {
   };
 
   const onDeleteClass = (idDelete) => {
-    axios.delete(`http://localhost:3002/class/${idDelete}`, {
-      idDelete: idDelete,
-    });
-    props.actChangeInfoTable(!onChangeInfoTable);
+    axios
+      .delete(`http://localhost:3002/class/${idDelete}`, {
+        idDelete: idDelete,
+      })
+      .then((res) => {
+        if (res?.data?.code === 200) {
+          onGetListClass();
+          message.success("Delete success!");
+        }
+      });
   };
 
   const onViewClass = (classID) => {
@@ -140,9 +147,7 @@ const TableClass = (props) => {
     props.activeViewStudentClass(true);
   };
 
-  //notication delete
   const onConfirmDelete = (idDelete) => {
-    message.success("Delete success!");
     onDeleteClass(idDelete);
   };
 
@@ -178,6 +183,5 @@ export default connect(
     actSaveGetListClass,
     actSetModalClassOpen,
     actSetSelectedClass,
-    actChangeInfoTable,
   }
 )(TableClass);

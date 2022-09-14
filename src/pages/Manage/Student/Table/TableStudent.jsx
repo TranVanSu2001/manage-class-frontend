@@ -1,92 +1,68 @@
 import React, { useState, useEffect } from "react";
-import Axios from "axios";
-
+import _ from "lodash";
+import axios from "axios";
 import { Space, Table, Button } from "antd";
 import { message, Popconfirm } from "antd";
-
 import { connect } from "react-redux";
 import {
-  activeEditStudentModal,
-  getListStudent,
-  saveSelectedStudent,
-  activeAddStudentModal,
-  activeViewStudentModal,
-  saveReceiveMail,
+  actSaveGetListStudent,
+  actSetSelectedStudent,
+  actSetModalStudentOpen,
+  actSaveReceiveMail,
 } from "@/redux/action/student";
-
-import { actChangeInfoTable } from "@/redux/action/class";
-
-import "antd/dist/antd.css";
+import { actSaveGetListClass } from "@/redux/action/class";
 import { EditOutlined, DeleteOutlined, MailOutlined } from "@ant-design/icons";
-
-//redux
-// import studentAction from "@/redux/action/student";
 import ModalSendMail from "../Modal/ModalSendMail";
 
 const TableStudent = (props) => {
-  const { listStudent, listIdClass, onChangeInfoTable } = props;
+  const { listStudent, listClass } = props;
 
-  //get details class to show
   useEffect(() => {
-    Axios.get("http://localhost:3002/student").then((res) => {
-      props.getListStudent(res.data.data);
+    onGetAllStudent();
+    onGetListClass();
+  }, []);
+
+  const onGetAllStudent = () => {
+    axios.get("http://localhost:3002/student").then((res) => {
+      props.actSaveGetListStudent(res.data.data);
     });
-  }, [onChangeInfoTable]);
+  };
 
-  var filterClass = [];
-  var listIdClassFiltter = [];
-
-  filterClass = listIdClass?.forEach((key, index) => {
-    const listClass = { text: key.id, value: key.id };
-
-    filterClass.push(listClass);
-    listIdClassFiltter = filterClass;
-  });
-
-  const data = [];
-  listStudent.forEach((value, key) => {
-    data.push({
-      id: value.id,
-      name: value.name,
-      age: value.age,
-      email: value.email,
-      classID: value.classID,
-      sex: value.sex,
+  const onGetListClass = () => {
+    axios.get("http://localhost:3002/class").then((res) => {
+      props.actSaveGetListClass(res?.data?.data || []);
     });
-  });
-
-  //function edit, view Modal
-  const editStudent = (infoStudent) => {
-    props.saveSelectedStudent(infoStudent);
-    props.activeAddStudentModal(true);
   };
 
-  //delete function
-  //notication delete
-
-  const deleteStudent = (idDelete) => {
-    Axios.delete(`http://localhost:3002/student/${idDelete}`, {
-      idDelete: idDelete,
-    });
-    props.actChangeInfoTable(!onChangeInfoTable);
+  // function edit, view Modal
+  const onEditStudent = (infoStudent) => {
+    props.actSetSelectedStudent(infoStudent);
+    props.actSetModalStudentOpen(true);
   };
 
-  const confirmDelete = (idDelete) => {
-    deleteStudent(idDelete);
-    message.success("Delete success!");
+  const onDeleteStudent = (idDelete) => {
+    axios
+      .delete(`http://localhost:3002/student/${idDelete}`, {
+        idDelete: idDelete,
+      })
+      .then((res) => {
+        if (res?.data?.code === 200) {
+          onGetAllStudent();
+          message.success("Delete success!");
+        }
+      });
   };
 
-  const cancel = (e) => {
-    message.error("Cancel delete!");
+  const onConfirmDelete = (idDelete) => {
+    onDeleteStudent(idDelete);
   };
 
-  //function send mail to student
+  // function send mail to student
   const sendMailToStudent = (receiveMail) => {
-    props.saveReceiveMail(receiveMail);
-    props.activeViewStudentModal(true);
+    props.actSaveReceiveMail(receiveMail);
   };
 
-  //sort table
+  // sort table
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
 
@@ -130,9 +106,14 @@ const TableStudent = (props) => {
       title: "Class",
       dataIndex: "classID",
       key: "classID",
-      filters: [...listIdClassFiltter],
+      filters: listClass?.map((classInfo, index) => ({
+        text: classInfo.name,
+        value: classInfo.id,
+      })),
       filteredValue: filteredInfo.classID || null,
-      onFilter: (value, record) => record.classID.includes(value),
+      onFilter: (value, record) =>
+        filteredInfo?.classID?.includes(record?.classID),
+      render: (value, record) => _.find(listClass, { id: value })?.name,
       width: "70px",
     },
     {
@@ -150,7 +131,7 @@ const TableStudent = (props) => {
         },
       ],
       filteredValue: filteredInfo.sex || null,
-      onFilter: (value, record) => record.sex.includes(value),
+      onFilter: (value, record) => record?.sex?.includes(value),
       width: "70px",
     },
     {
@@ -164,11 +145,12 @@ const TableStudent = (props) => {
             size="small"
             style={{ margin: "0 10px" }}
             onClick={() => {
-              editStudent(infoStudent);
+              onEditStudent(infoStudent);
             }}
           >
             Edit
           </Button>
+
           <Button
             type="primary"
             icon={<DeleteOutlined />}
@@ -177,8 +159,7 @@ const TableStudent = (props) => {
           >
             <Popconfirm
               title="Are you sure to delete this task?"
-              onConfirm={() => confirmDelete(infoStudent.id)}
-              onCancel={cancel}
+              onConfirm={() => onConfirmDelete(infoStudent.id)}
               okText="Yes"
               cancelText="No"
             >
@@ -191,6 +172,7 @@ const TableStudent = (props) => {
               </span>
             </Popconfirm>
           </Button>
+
           <Button
             type="primary"
             icon={<MailOutlined />}
@@ -204,13 +186,15 @@ const TableStudent = (props) => {
       width: "200px",
     },
   ];
+
   return (
     <div>
       <Table
-        dataSource={data}
+        dataSource={listStudent}
         columns={columns}
         onChange={handleChangeTable}
-      ></Table>
+      />
+
       <ModalSendMail />
     </div>
   );
@@ -219,16 +203,13 @@ const TableStudent = (props) => {
 export default connect(
   (store) => ({
     listStudent: store.Student.listStudent,
-    listIdClass: store.Class.listIdClass,
-    onChangeInfoTable: store.Class.onChangeInfoTable,
+    listClass: store.Class.listClass,
   }),
   {
-    activeEditStudentModal,
-    getListStudent,
-    saveSelectedStudent,
-    activeAddStudentModal,
-    actChangeInfoTable,
-    activeViewStudentModal,
-    saveReceiveMail,
+    actSaveGetListStudent,
+    actSetSelectedStudent,
+    actSetModalStudentOpen,
+    actSaveReceiveMail,
+    actSaveGetListClass,
   }
 )(TableStudent);
