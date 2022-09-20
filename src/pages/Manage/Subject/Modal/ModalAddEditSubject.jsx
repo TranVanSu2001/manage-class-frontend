@@ -8,120 +8,93 @@ import _ from "lodash";
 
 import { connect } from "react-redux";
 import {
-  getListIdSubject,
-  activeAddSubjectModal,
-  saveSelectedSubject,
+  actAddSubjectModal,
+  actSelectedSubject,
+  actSaveCreateSubject,
+  actSaveUpdateSubject,
 } from "@/redux/action/subject";
 import { setListIdClass } from "@/redux/action/class";
 
+const dateFormat = "DD/MM/YYYY";
+
 const ModalAddEditSubject = (props) => {
-  const dateFormat = "DD/MM/YYYY";
-  //react hook
-  const [classID, setClassID] = useState("Select");
-  const [valuePickTime, setValuePickTime] = useState([null, null]);
-
-  const {
-    listIdClass,
-    activeAddModal,
-    listIdSubject,
-    onChangeInfoTable,
-    selectedSubject,
-  } = props;
-
+  const { listIdClass, activeAddModal, selectedSubject } = props;
   const [form] = Form.useForm();
 
   const isCreateMode = useMemo(() => {
     return _.isEmpty(selectedSubject);
   }, [selectedSubject]);
 
-  //antd
   const { Option } = Select;
   const { RangePicker } = DatePicker;
 
   useEffect(() => {
-    axios.get("http://localhost:3002/class/listIdClass").then((res) => {
-      props.setListIdClass(res.data.data || []);
-    });
+    getListIdClass();
   }, []);
 
-  useEffect(() => {
-    axios.get("http://localhost:3002/subject/listIdSubject").then((res) => {
-      props.getListIdSubject(res.data.data || []);
+  const getListIdClass = () => {
+    axios.get("http://localhost:3002/class/listIdClass").then((res) => {
+      props.setListIdClass(res?.data?.data || []);
     });
-  }, [onChangeInfoTable]);
+  };
 
   useEffect(() => {
     form.setFieldsValue({
       id: selectedSubject?.id,
       name: selectedSubject?.name,
+      classID: selectedSubject?.classID,
+      pickTimeSubject: selectedSubject?.startTime
+        ? [
+            moment(selectedSubject?.startTime || null, dateFormat),
+            moment(selectedSubject?.endTime || null, dateFormat),
+          ]
+        : [null, null],
     });
-
-    // if ((Object.keys(selectedSubject).length = !0)) {
-    //   setClassID(selectedSubject?.classID);
-    //   setValuePickTime([
-    //     moment(selectedSubject?.startTime, dateFormat),
-    //     moment(selectedSubject?.endTime, dateFormat),
-    //   ]);
-    // }
-    if (!_.isEmpty(selectedSubject)) {
-      setClassID(selectedSubject?.classID);
-      setValuePickTime([
-        moment(selectedSubject?.startTime, dateFormat),
-        moment(selectedSubject?.endTime, dateFormat),
-      ]);
-    }
   }, [selectedSubject]);
 
-  const onHandleAddEdit = async () => {
-    //submit info subject to backend
-    const { id, name } = await form.validateFields(["id", "name"]);
+  const onSubmitSubject = async () => {
+    const { id, name, classID, pickTimeSubject } = await form.validateFields([
+      "id",
+      "name",
+      "classID",
+      "pickTimeSubject",
+    ]);
 
     const requestBody = {
       id,
       name,
       classID,
-      startTime: valuePickTime[0].format(dateFormat),
-      endTime: valuePickTime[1].format(dateFormat),
+      startTime: pickTimeSubject[0].format(dateFormat),
+      endTime: pickTimeSubject[1].format(dateFormat),
     };
 
     if (isCreateMode) {
-      axios.post("http://localhost:3002/subject", requestBody);
-
-      var IdExist = false;
-      listIdSubject.forEach((element) => {
-        if (element.id === id) {
-          IdExist = true;
+      axios.post("http://localhost:3002/subject", requestBody).then((res) => {
+        if (res?.data?.code === 200) {
+          props.actSaveCreateSubject(requestBody);
+          onCloseModal();
+          onShowNotifcation("success", "Add subject success");
         }
       });
-
-      if (!IdExist) {
-        noticationAddSubject("success", "Add subject success");
-      } else {
-        noticationAddSubject("error", "ID exist");
-      }
     } //edit subject
     else {
-      axios.put("http://localhost:3002/subject", requestBody);
-      props.saveSelectedSubject({});
+      axios.put("http://localhost:3002/subject", requestBody).then((res) => {
+        if (res?.data?.code === 200) {
+          props.actSaveUpdateSubject(requestBody);
+          onCloseModal();
+          onShowNotifcation("success", "Edit subject success");
+        }
+      });
     }
-    //reset form
-    form.setFieldsValue({
-      id: "",
-      name: "",
-    });
-    setClassID("Select");
-    setValuePickTime([null, null]);
-
-    props.activeAddSubjectModal(false);
   };
 
-  const onHandleCancelAddEdit = () => {
-    props.saveSelectedSubject({});
-    props.activeAddSubjectModal(false);
+  const onCloseModal = () => {
+    props.actSelectedSubject({});
+    props.actAddSubjectModal(false);
   };
 
   //show notication after add successfully
-  const noticationAddSubject = (type, messages) => {
+  const onShowNotifcation = (type, messages) => {
     notification[type]({
       message: messages,
       description: "",
@@ -129,40 +102,15 @@ const ModalAddEditSubject = (props) => {
     });
   };
 
-  const handleChangeClassID = (value) => {
-    // console.log(`selected ${value}`);
-    setClassID(`${value}`);
-  };
-
-  const onChangeDatePicker = (value, dateString) => {
-    setValuePickTime([
-      moment(dateString[0], dateFormat),
-      moment(dateString[1], dateFormat),
-    ]);
-  };
-
   return (
     <Modal
       title={isCreateMode ? "Add subject" : "Edit subject"}
       visible={activeAddModal}
-      onOk={onHandleAddEdit}
-      onCancel={onHandleCancelAddEdit}
+      onOk={onSubmitSubject}
+      onCancel={onCloseModal}
       okText={isCreateMode ? "Add" : "Edit"}
     >
-      <Form
-        name="basic"
-        labelCol={{
-          span: 8,
-        }}
-        wrapperCol={{
-          span: 16,
-        }}
-        initialValues={{
-          remember: true,
-        }}
-        form={form}
-        autoComplete="off"
-      >
+      <Form form={form} autoComplete="off" layout="vertical">
         <Form.Item
           label="ID"
           name="id"
@@ -187,15 +135,8 @@ const ModalAddEditSubject = (props) => {
         >
           <Input type="text" />
         </Form.Item>
-        <Form.Item label="Class">
-          <Select
-            defaultValue="Select"
-            style={{
-              width: 120,
-            }}
-            onChange={handleChangeClassID}
-            value={classID}
-          >
+        <Form.Item label="Class" name="classID">
+          <Select placeholder="Select">
             {listIdClass?.map((key, index) => {
               return (
                 <Option value={key.id} key={key.id}>
@@ -213,13 +154,9 @@ const ModalAddEditSubject = (props) => {
               message: "Please input date time ",
             },
           ]}
+          name="pickTimeSubject"
         >
-          <RangePicker
-            onChange={onChangeDatePicker}
-            format={dateFormat}
-            allowClear={false}
-            value={valuePickTime}
-          />
+          <RangePicker format={dateFormat} allowClear={true} />
         </Form.Item>
       </Form>
     </Modal>
@@ -228,16 +165,16 @@ const ModalAddEditSubject = (props) => {
 
 export default connect(
   (store) => ({
-    onChangeInfoTable: store.Class.onChangeInfoTable,
     listIdClass: store.Class.listIdClass,
     selectedSubject: store.Subject.selectedSubject,
     activeAddModal: store.Subject.activeAddModal,
     listIdSubject: store.Subject.listIdSubject,
   }),
   {
-    getListIdSubject,
-    activeAddSubjectModal,
+    actAddSubjectModal,
     setListIdClass,
-    saveSelectedSubject,
+    actSelectedSubject,
+    actSaveUpdateSubject,
+    actSaveCreateSubject,
   }
 )(ModalAddEditSubject);

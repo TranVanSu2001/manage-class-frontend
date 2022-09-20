@@ -3,7 +3,7 @@ import { Table, Button, Modal } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import "antd/dist/antd.css";
 import { useSelector, connect } from "react-redux";
-import { activeViewStudentClass } from "@/redux/action/class";
+import { actViewStudentClass } from "@/redux/action/class";
 
 const TableViewStudentClass = (props) => {
   //sort table
@@ -11,25 +11,12 @@ const TableViewStudentClass = (props) => {
   const [sortedInfo, setSortedInfo] = useState({});
 
   const infoStudentByIdClass = props?.infoStudentByIdClass;
-  //data table
-  var data = [];
 
   const classReducer = useSelector((state) => state.Class);
 
-  infoStudentByIdClass.forEach((value, key) => {
-    data.push({
-      id: value.id,
-      name: value.name,
-      age: value.age,
-      email: value.email,
-      sex: value.sex,
-    });
-  });
-
   //modal
   const handleModalClose = () => {
-    // dispatch(classAction.activeViewStudentClass(false));
-    props.activeViewStudentClass(false);
+    props.actViewStudentClass(false);
   };
 
   const columns = [
@@ -83,11 +70,6 @@ const TableViewStudentClass = (props) => {
     setSortedInfo(sorter);
   };
 
-  const addMoreStudentInClass = () => {
-    props.actSetModalStudentOpen(true);
-    console.log("123");
-  };
-
   return (
     <div>
       <Modal
@@ -102,17 +84,9 @@ const TableViewStudentClass = (props) => {
             : `Student in class ${infoStudentByIdClass[0].classID}`
         }
       >
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          style={{ margin: "10px 10px" }}
-          onClick={addMoreStudentInClass}
-        >
-          Add more
-        </Button>
         <Table
           columns={columns}
-          dataSource={data}
+          dataSource={infoStudentByIdClass}
           style={{ height: "100%", width: "100%" }}
           onChange={handleChangeTable}
           pagination={false}
@@ -127,5 +101,5 @@ export default connect(
     listClass: store.Class.listClass,
     onChangeInfoTable: store.Class.onChangeInfoTable,
   }),
-  { activeViewStudentClass }
+  { actViewStudentClass }
 )(TableViewStudentClass);

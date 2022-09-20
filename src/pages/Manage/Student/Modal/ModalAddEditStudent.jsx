@@ -154,7 +154,7 @@ const ModalAddEditStudent = (props) => {
             {listClass?.map((classInfo, index) => {
               return (
                 <Option value={classInfo?.id} key={index}>
-                  {classInfo?.name}
+                  Class {classInfo?.id}
                 </Option>
               );
             })}

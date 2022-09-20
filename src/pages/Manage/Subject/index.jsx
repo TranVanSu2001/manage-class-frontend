@@ -4,16 +4,11 @@ import React from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 
-import {
-  SubjectWrapper,
-  SubjectTitle,
-  SubjectContainer,
-  ButtonAction,
-} from "./style";
+import { SubjectWrapper, PageHeadingWrapper, SubjectContainer } from "./style";
 
 //redux
 import { connect } from "react-redux";
-import { activeAddSubjectModal } from "@/redux/action/subject";
+import { actAddSubjectModal } from "@/redux/action/subject";
 
 import TableSubject from "./Table/TableSubject";
 
@@ -21,23 +16,23 @@ import ModalAddEditSubject from "@/pages/Manage/Subject/Modal/ModalAddEditSubjec
 
 const Subject = (props) => {
   const showModal = () => {
-    props.activeAddSubjectModal(true);
+    props.actAddSubjectModal(true);
   };
 
   return (
     <SubjectWrapper>
-      <SubjectTitle>Manage Subject</SubjectTitle>
-      <ButtonAction>
+      <PageHeadingWrapper>
+        <div className="heading">Manage Subject</div>
         <Button
           type="primary"
           icon={<PlusOutlined />}
-          style={{ margin: "0 10px" }}
+          style={{ marginBottom: "1rem" }}
           onClick={showModal}
         >
           Add
         </Button>
-        <ModalAddEditSubject />
-      </ButtonAction>
+      </PageHeadingWrapper>
+      <ModalAddEditSubject />
       <SubjectContainer>
         <TableSubject />
       </SubjectContainer>
@@ -45,4 +40,4 @@ const Subject = (props) => {
   );
 };
 
-export default connect((store) => ({}), { activeAddSubjectModal })(Subject);
+export default connect((store) => ({}), { actAddSubjectModal })(Subject);

@@ -3,12 +3,7 @@ import TableStudent from "./Table/TableStudent";
 
 import { PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
-import {
-  StudentWrapper,
-  PageHeadingWrapper,
-  StudentContainer,
-  ButtonAction,
-} from "./style";
+import { StudentWrapper, PageHeadingWrapper, StudentContainer } from "./style";
 
 import { actSetModalStudentOpen } from "@/redux/action/student";
 import { connect } from "react-redux";
@@ -24,9 +19,7 @@ const Student = (props) => {
     <StudentWrapper>
       <PageHeadingWrapper>
         <div className="heading">Manage Student</div>
-      </PageHeadingWrapper>
 
-      <ButtonAction>
         <Button
           type="primary"
           icon={<PlusOutlined />}
@@ -35,10 +28,9 @@ const Student = (props) => {
         >
           Add
         </Button>
+      </PageHeadingWrapper>
 
-        <ModalAddEditStudent />
-      </ButtonAction>
-
+      <ModalAddEditStudent />
       <StudentContainer>
         <TableStudent />
       </StudentContainer>

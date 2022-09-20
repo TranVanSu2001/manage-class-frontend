@@ -1,53 +1,45 @@
 import React, { useState, useEffect } from "react";
-import Axios from "axios";
+import axios from "axios";
 
-//ant design
 import { Space, Table, Button, message, Popconfirm } from "antd";
 import "antd/dist/antd.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
-//redux
 import { connect } from "react-redux";
 import {
-  activeAddSubjectModal,
-  setListSubject,
-  saveSelectedSubject,
+  actAddSubjectModal,
+  actSelectedSubject,
+  actSetListSubject,
 } from "@/redux/action/subject";
 
 const TableSubject = (props) => {
-  //redux
-  const { listSubject, onChangeInfoTable } = props;
-  //view class info
+  const { listSubject } = props;
 
-  //get details class to show
   useEffect(() => {
-    Axios.get("http://localhost:3002/subject").then((res) => {
-      props.setListSubject(res.data.data);
-    });
-  }, [onChangeInfoTable]);
+    getAllSubject();
+  }, []);
 
-  const data = [];
-  listSubject.forEach((value, key) => {
-    data.push({
-      id: value.id,
-      name: value.name,
-      classID: value.classID,
-      startTime: value.startTime,
-      endTime: value.endTime,
+  const getAllSubject = () => {
+    axios.get("http://localhost:3002/subject").then((res) => {
+      props.actSetListSubject(res.data.data);
     });
-  });
-
-  //function edit, view Modal
-  const editSubject = (infoSubject) => {
-    props.saveSelectedSubject(infoSubject);
-    props.activeAddSubjectModal(true);
   };
 
-  //delete function
+  const editSubject = (infoSubject) => {
+    props.actSelectedSubject(infoSubject);
+    props.actAddSubjectModal(true);
+  };
+
   const deleteSubject = (idDelete) => {
-    Axios.delete(`http://localhost:3002/subject/${idDelete}`, {
-      idDelete: idDelete,
-    });
+    axios
+      .delete(`http://localhost:3002/subject/${idDelete}`, {
+        idDelete: idDelete,
+      })
+      .then((res) => {
+        if (res?.data?.code === 200) {
+          getAllSubject();
+        }
+      });
   };
 
   const confirmDelete = (idDelete) => {
@@ -59,7 +51,6 @@ const TableSubject = (props) => {
     message.error("Cancel delete!");
   };
 
-  //sort table
   const [filteredInfo, setFilteredInfo] = useState({});
   const [sortedInfo, setSortedInfo] = useState({});
 
@@ -73,7 +64,7 @@ const TableSubject = (props) => {
       title: "ID",
       dataIndex: "id",
       key: "id",
-      sorter: (a, b) => a.id.length - b.id.length,
+      sorter: (a, b) => a.id - b.id,
       sortOrder: sortedInfo.columnKey === "id" ? sortedInfo.order : null,
       ellipsis: true,
       width: "70px",
@@ -87,9 +78,9 @@ const TableSubject = (props) => {
     {
       title: "Class",
       dataIndex: "classID",
-      key: "age",
-      sorter: (a, b) => a.age - b.age,
-      sortOrder: sortedInfo.columnKey === "age" ? sortedInfo.order : null,
+      key: "classID",
+      sorter: (a, b) => a.classID - b.classID,
+      sortOrder: sortedInfo.columnKey === "classID" ? sortedInfo.order : null,
       ellipsis: true,
       width: "70px",
     },
@@ -151,7 +142,7 @@ const TableSubject = (props) => {
   return (
     <div>
       <Table
-        dataSource={data}
+        dataSource={listSubject}
         columns={columns}
         onChange={handleChangeTable}
       ></Table>
@@ -161,13 +152,12 @@ const TableSubject = (props) => {
 
 export default connect(
   (store) => ({
-    onChangeInfoTable: store.Class.onChangeInfoTable,
     activeAddModal: store.Subject.activeAddModal,
     listSubject: store.Subject.listSubject,
   }),
   {
-    activeAddSubjectModal,
-    setListSubject,
-    saveSelectedSubject,
+    actAddSubjectModal,
+    actSelectedSubject,
+    actSetListSubject,
   }
 )(TableSubject);

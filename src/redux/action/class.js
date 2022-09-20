@@ -39,7 +39,7 @@ export const actSaveUpdateClass = (payload) => ({
   payload,
 });
 
-export const activeViewStudentClass = (payload) => ({
+export const actViewStudentClass = (payload) => ({
   type: SET_VIEW_STUDENT_IN_CLASS,
   payload,
 });
