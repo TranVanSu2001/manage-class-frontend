@@ -107,7 +107,7 @@ const TableStudent = (props) => {
       dataIndex: "classID",
       key: "classID",
       filters: listClass?.map((classInfo, index) => ({
-        text: classInfo.name,
+        text: `Class ${classInfo.id}`,
         value: classInfo.id,
       })),
       filteredValue: filteredInfo.classID || null,

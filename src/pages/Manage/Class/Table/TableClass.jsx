@@ -13,14 +13,13 @@ import {
   actSaveGetListClass,
   actSetModalClassOpen,
   actSetSelectedClass,
-  activeViewStudentClass,
+  actViewStudentClass,
 } from "@/redux/action/class";
 import TableViewStudentClass from "./TableViewStudentClass";
 
 const getColumns = (
   onEditClass,
   onViewClass,
-  onDeleteClass,
   onConfirmDelete,
   onCancelDelete
 ) => [
@@ -106,15 +105,6 @@ const TableClass = (props) => {
     });
   };
 
-  const data = [];
-  listClass.forEach((value, key) => {
-    data.push({
-      id: value.id,
-      name: value.name,
-      numberOfStudent: value.numberOfStudent,
-    });
-  });
-
   const onEditClass = (classInfo) => {
     props.actSetSelectedClass(classInfo);
     props.actSetModalClassOpen(true);
@@ -144,7 +134,7 @@ const TableClass = (props) => {
       .catch((error) => {
         console.log("error: " + error);
       });
-    props.activeViewStudentClass(true);
+    props.actViewStudentClass(true);
   };
 
   const onConfirmDelete = (idDelete) => {
@@ -158,7 +148,7 @@ const TableClass = (props) => {
   return (
     <div>
       <Table
-        dataSource={data}
+        dataSource={listClass}
         columns={getColumns(
           onEditClass,
           onViewClass,
@@ -179,7 +169,7 @@ export default connect(
     onChangeInfoTable: store.Class.onChangeInfoTable,
   }),
   {
-    activeViewStudentClass,
+    actViewStudentClass,
     actSaveGetListClass,
     actSetModalClassOpen,
     actSetSelectedClass,

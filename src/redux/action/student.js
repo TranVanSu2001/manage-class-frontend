@@ -23,8 +23,6 @@ export const actSetSelectedStudent = (payload) => ({
   payload,
 });
 
-
-
 export const actSaveCreateStudent = (payload) => ({
   type: SAVE_CREATE_STUDENT,
   payload,
