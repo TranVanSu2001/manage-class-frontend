@@ -1,19 +1,21 @@
-import { Layout, Menu, Avatar, Badge } from "antd";
-import { useState } from "react";
+import { Layout, Menu, Avatar, Badge, Dropdown } from "antd";
+import { useState, useMemo } from "react";
 import {
   AiFillHome,
   AiOutlineUnorderedList,
   AiOutlineBell,
+  AiOutlineLogout,
+  AiOutlineSetting,
 } from "react-icons/ai";
-import { Link } from "react-router-dom";
-import { DefaultLayoutWrapper, ContentWrapper } from "./style";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { DefaultLayoutWrapper, ContentWrapper, MenuWrapper } from "./style";
 
 const { Header, Footer, Sider } = Layout;
 
 const items = [
   {
     label: "Home",
-    key: "1",
+    key: "/",
     icon: (
       <Link to="/">
         <AiFillHome />
@@ -22,7 +24,7 @@ const items = [
   },
   {
     label: "Manage",
-    key: "sub1",
+    key: "/manage",
     icon: (
       <Link to="/">
         <AiOutlineUnorderedList />
@@ -31,18 +33,34 @@ const items = [
     children: [
       {
         label: "Class",
-        key: "2",
+        key: "/class",
         icon: <Link to="/class"></Link>,
       },
       {
         label: "Student",
-        key: "3",
+        key: "/student",
         icon: <Link to="/student"></Link>,
       },
       {
         label: "Subject",
-        key: "4",
+        key: "/subject",
         icon: <Link to="/subject"></Link>,
+      },
+    ],
+  },
+  {
+    label: "Config",
+    key: "/config",
+    icon: (
+      <Link to="/">
+        <AiOutlineUnorderedList />
+      </Link>
+    ),
+    children: [
+      {
+        label: "Account",
+        key: "/account",
+        icon: <Link to="/account"></Link>,
       },
     ],
   },
@@ -50,6 +68,62 @@ const items = [
 
 const DefaultLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const activeKey = useMemo(() => {
+    let openKey = "";
+
+    for (let i = 0; i < items.length; i++) {
+      const parent = items[i];
+
+      if (parent?.key === pathname) {
+        openKey = parent.key;
+        break;
+      }
+
+      if (parent?.children) {
+        for (let j = 0; j < items.length; j++) {
+          if (parent?.children[j]?.key === pathname) {
+            openKey = parent.key;
+            break;
+          }
+        }
+      }
+    }
+
+    return openKey;
+  }, [pathname]);
+
+  const onLogout = () => {
+    navigate("/");
+  };
+
+  const menu = (
+    <MenuWrapper>
+      <Menu>
+        <Menu.Item key={1} onClick={onLogout}>
+          <div className="menu-item">
+            <div className="icon">
+              <AiOutlineLogout />
+            </div>
+
+            <span>Logout</span>
+          </div>
+        </Menu.Item>
+
+        <Menu.Item key={2} onClick={onLogout} className="menu-item">
+          <div className="menu-item">
+            <div className="icon">
+              <AiOutlineSetting />
+            </div>
+
+            <span>Config</span>
+          </div>
+        </Menu.Item>
+      </Menu>
+    </MenuWrapper>
+  );
 
   return (
     <DefaultLayoutWrapper>
@@ -63,9 +137,10 @@ const DefaultLayout = ({ children }) => {
 
           <Menu
             theme="dark"
-            defaultSelectedKeys={["1"]}
             mode="inline"
             items={items}
+            openKeys={[activeKey]}
+            selectedKeys={[pathname]}
           />
         </Sider>
 
@@ -78,10 +153,12 @@ const DefaultLayout = ({ children }) => {
             </div>
 
             <Badge style={{ backgroundColor: "#52c41a" }} dot={true}>
-              <Avatar
-                src="https://joeschmoe.io/api/v1/random"
-                style={{ border: "1px solid #f2f2f2" }}
-              />
+              <Dropdown overlay={menu}>
+                <Avatar
+                  src="https://joeschmoe.io/api/v1/random"
+                  style={{ border: "1px solid #f2f2f2" }}
+                />
+              </Dropdown>
             </Badge>
           </Header>
 

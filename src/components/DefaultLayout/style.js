@@ -1,5 +1,22 @@
 import styled from "styled-components";
 
+const MenuWrapper = styled.div`
+    width: 10rem;
+
+    .menu-item {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+
+        .icon {
+            display: flex;
+            align-items: center;
+            margin-right: 1rem;
+            font-size: 1.1rem;
+        }
+    }
+`;
+
 const DefaultLayoutWrapper = styled.div`
     .main-layout {
         min-height: 100vh;
@@ -47,4 +64,4 @@ const ContentWrapper = styled.div`
     margin-bottom: auto;
 `;
 
-export { DefaultLayoutWrapper, ContentWrapper };
+export { DefaultLayoutWrapper, ContentWrapper, MenuWrapper };
