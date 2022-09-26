@@ -1,11 +1,8 @@
 import moment from "moment";
-
-import React, { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import axios from "axios";
-
 import { Modal, Form, Input, notification, Select, DatePicker } from "antd";
 import _ from "lodash";
-
 import { connect } from "react-redux";
 import {
   actAddSubjectModal,
@@ -50,7 +47,7 @@ const ModalAddEditSubject = (props) => {
           ]
         : [null, null],
     });
-  }, [selectedSubject]);
+  }, [selectedSubject, form]);
 
   const onSubmitSubject = async () => {
     const { id, name, classID, pickTimeSubject } = await form.validateFields([
@@ -123,6 +120,7 @@ const ModalAddEditSubject = (props) => {
         >
           <Input type="text" />
         </Form.Item>
+
         <Form.Item
           label="Name"
           name="name"
@@ -135,6 +133,7 @@ const ModalAddEditSubject = (props) => {
         >
           <Input type="text" />
         </Form.Item>
+
         <Form.Item label="Class" name="classID">
           <Select placeholder="Select">
             {listIdClass?.map((key, index) => {
@@ -146,6 +145,7 @@ const ModalAddEditSubject = (props) => {
             })}
           </Select>
         </Form.Item>
+
         <Form.Item
           label="Time"
           rules={[
@@ -156,7 +156,11 @@ const ModalAddEditSubject = (props) => {
           ]}
           name="pickTimeSubject"
         >
-          <RangePicker format={dateFormat} allowClear={true} />
+          <RangePicker
+            format={dateFormat}
+            allowClear={true}
+            style={{ width: "100%" }}
+          />
         </Form.Item>
       </Form>
     </Modal>
