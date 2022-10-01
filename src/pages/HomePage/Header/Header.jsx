@@ -12,25 +12,8 @@ import {
   ButtonView,
 } from "./HeaderStyed";
 import Topbar from "../Topbar";
-
 import "../style.css";
-
-// const style = {
-//   height: 40,
-//   width: 40,
-//   lineHeight: "40px",
-//   borderRadius: 4,
-//   backgroundColor: "#1088e9",
-//   color: "#fff",
-//   textAlign: "center",
-//   fontSize: 14,
-// };
-
 const Header = () => {
-  // const backTop = () => {
-  //   window.scrollTo(0, document.body.scrollHeight);
-  // };
-
   return (
     <HeaderTotal>
       <HomePageWrapper className="home-Page_Wrapper">

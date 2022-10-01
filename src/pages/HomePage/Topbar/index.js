@@ -30,20 +30,22 @@ const Topbar = () => {
               Home
             </Link>
           </LiNavigation>
+
           <LiNavigation>
             <Link to="/class" style={{ color: "#fff" }}>
               Manage
             </Link>
           </LiNavigation>
-          <LiNavigation>
-            <Link to="/student" style={{ color: "#fff" }}>
-              View
-            </Link>
-          </LiNavigation>
+
           <LiNavigation>
             <div style={{ color: "#fff" }} onClick={backTop}>
               About
             </div>
+          </LiNavigation>
+          <LiNavigation>
+            <Link to="/signin" style={{ color: "#fff" }}>
+              SignIn
+            </Link>
           </LiNavigation>
         </Navigation>
       </HeaderHomePage>

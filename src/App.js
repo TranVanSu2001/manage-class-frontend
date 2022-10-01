@@ -10,7 +10,12 @@ const App = () => {
         <Routes>
           {publicRoutes.map((route, index) => {
             const Page = route.component;
-            const Layout = route.path === "/" ? Fragment : DefaultLayout;
+            const Layout =
+              route.path === "/" ||
+              route.path === "/signin" ||
+              route.path === "/signup"
+                ? Fragment
+                : DefaultLayout;
 
             return (
               <Route
