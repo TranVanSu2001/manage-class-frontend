@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Table, Button, Modal } from "antd";
-import { PlusOutlined } from "@ant-design/icons";
+import { Table, Modal } from "antd";
 import "antd/dist/antd.css";
 import { useSelector, connect } from "react-redux";
 import { actViewStudentClass } from "@/redux/action/class";

@@ -15,6 +15,7 @@ import {
   actSetSelectedClass,
   actViewStudentClass,
 } from "@/redux/action/class";
+import classApi from "@/api/class";
 import TableViewStudentClass from "./TableViewStudentClass";
 
 const getColumns = (
@@ -94,15 +95,17 @@ const getColumns = (
 const TableClass = (props) => {
   const { listClass } = props;
   const [infoStudentByIdClass, setInfoStudentByClass] = useState([]);
+  const [isTableLoading, setTableLoading] = useState(false);
 
   useEffect(() => {
     onGetListClass();
   }, []);
 
-  const onGetListClass = () => {
-    axios.get("http://localhost:3002/class").then((res) => {
-      props.actSaveGetListClass(res?.data?.data || []);
-    });
+  const onGetListClass = async () => {
+    setTableLoading(true);
+    const res = await classApi.getListClass();
+    props.actSaveGetListClass(res?.data || []);
+    setTableLoading(false);
   };
 
   const onEditClass = (classInfo) => {
@@ -148,6 +151,7 @@ const TableClass = (props) => {
   return (
     <div>
       <Table
+        loading={isTableLoading}
         dataSource={listClass}
         columns={getColumns(
           onEditClass,
@@ -165,8 +169,8 @@ const TableClass = (props) => {
 
 export default connect(
   (store) => ({
-    listClass: store.Class.listClass,
-    onChangeInfoTable: store.Class.onChangeInfoTable,
+    listClass: store?.Class?.listClass,
+    onChangeInfoTable: store?.Class?.onChangeInfoTable,
   }),
   {
     actViewStudentClass,
