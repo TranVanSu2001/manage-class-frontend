@@ -1,4 +1,4 @@
-import { SAVE_INFOMATION_SIGN_IN, USER_LOG_OUT } from "../type";
+import { SAVE_INFOMATION_SIGN_IN, SET_AUTH_USER, USER_LOG_OUT } from "../type";
 
 export const actSaveInfomationSignIn = (payload) => ({
   type: SAVE_INFOMATION_SIGN_IN,
