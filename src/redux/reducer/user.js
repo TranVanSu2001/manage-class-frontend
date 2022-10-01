@@ -1,8 +1,9 @@
-import { SAVE_INFOMATION_SIGN_IN } from "../type";
+import { SAVE_INFOMATION_SIGN_IN, SET_AUTH_USER } from "../type";
 
 const initialState = {
   usernameLogin: "",
   passwordLogin: "",
+  isAuth: false,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -14,6 +15,12 @@ const userReducer = (state = initialState, action) => {
         ...state,
         usernameLogin: payload.usernameLogin,
         passwordLogin: payload.passwordLogin,
+      };
+
+    case SET_AUTH_USER:
+      return {
+        ...state,
+        isAuth: payload,
       };
 
     default:
