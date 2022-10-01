@@ -12,6 +12,7 @@ import {
 } from "@/redux/action/student";
 import { actSaveGetListClass } from "@/redux/action/class";
 import { EditOutlined, DeleteOutlined, MailOutlined } from "@ant-design/icons";
+import classApi from "@/api/class";
 import ModalSendMail from "../Modal/ModalSendMail";
 
 const TableStudent = (props) => {
@@ -28,10 +29,9 @@ const TableStudent = (props) => {
     });
   };
 
-  const onGetListClass = () => {
-    axios.get("http://localhost:3002/class").then((res) => {
-      props.actSaveGetListClass(res?.data?.data || []);
-    });
+  const onGetListClass = async () => {
+    const res = await classApi.getListClass();
+    props.actSaveGetListClass(res?.data || []);
   };
 
   // function edit, view Modal
