@@ -9,14 +9,11 @@ import {
   RegisterTextNoAccount,
   RegisterDirectPath,
 } from "./SignUpStyled";
-
 import { useNavigate } from "react-router-dom";
-
 import axios from "axios";
 import { connect } from "react-redux";
-import { actSaveInfomationSignIn } from "@/redux/action/user";
-
 import { Button, Form, Input, notification } from "antd";
+import { actSaveInfomationSignIn } from "@/redux/action/user";
 
 const SignUp = (props) => {
   const [form] = Form.useForm();
@@ -42,7 +39,6 @@ const SignUp = (props) => {
       .then((res) => {
         console.log("res", res);
         if (res?.data?.code === 200) {
-          console.log("success");
           onShowLoginNotifcation("success", "Register success");
 
           setTimeout(() => {

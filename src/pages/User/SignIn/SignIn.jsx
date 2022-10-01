@@ -9,13 +9,10 @@ import {
   RegisterTextNoAccount,
   RegisterDirectPath,
 } from "./SignInStyled";
-
 import { useNavigate } from "react-router-dom";
-
 import axios from "axios";
 import { connect } from "react-redux";
 import { actSaveInfomationSignIn } from "@/redux/action/user";
-
 import { Button, Form, Input, notification } from "antd";
 
 const SignIn = (props) => {
@@ -31,7 +28,6 @@ const SignIn = (props) => {
   };
 
   const onSubmitInformationSignIn = async (values) => {
-    // console.log("Success:", values);
     const usernameLogin = values.username;
     const passwordLogin = values.password;
 
@@ -41,87 +37,80 @@ const SignIn = (props) => {
         password: passwordLogin,
       })
       .then((res) => {
-        console.log("res", res);
         if (res?.data?.code === 200) {
           console.log("success");
           onShowLoginNotifcation("success", "Login success");
+          props.actSaveInfomationSignIn({
+            usernameLogin,
+            token: res?.data?.token,
+          });
 
-          setTimeout(() => {
-            navigate("/class");
-          }, 2000);
+          navigate("/class");
         } else {
           onShowLoginNotifcation("error", "Login fail");
         }
       });
-
-    props.actSaveInfomationSignIn({ usernameLogin, passwordLogin });
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
   };
 
   return (
-    <div>
-      <SignInWrapper>
-        <SignInImage />
-        <SignInFormWrapper>
-          <SigninInHeader>Sign In</SigninInHeader>
-          <FormWrapper>
-            <Form
-              name="basic"
-              onFinish={onSubmitInformationSignIn}
-              autoComplete="off"
-              form={form}
-              layout="vertical"
+    <SignInWrapper>
+      <SignInImage />
+      <SignInFormWrapper>
+        <SigninInHeader>Sign In</SigninInHeader>
+        <FormWrapper>
+          <Form
+            name="basic"
+            onFinish={onSubmitInformationSignIn}
+            autoComplete="off"
+            form={form}
+            layout="vertical"
+          >
+            <Form.Item
+              label="Username"
+              name="username"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your username!",
+                },
+              ]}
             >
-              <Form.Item
-                label="Username"
-                name="username"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your username!",
-                  },
-                ]}
-              >
-                <Input placeholder="admin123" />
-              </Form.Item>
+              <Input placeholder="admin123" />
+            </Form.Item>
 
-              <Form.Item
-                label="Password"
-                name="password"
-                rules={[
-                  {
-                    required: true,
-                    message: "Please input your password!",
-                  },
-                ]}
-              >
-                <Input.Password placeholder="******" />
-              </Form.Item>
+            <Form.Item
+              label="Password"
+              name="password"
+              rules={[
+                {
+                  required: true,
+                  message: "Please input your password!",
+                },
+              ]}
+            >
+              <Input.Password placeholder="******" />
+            </Form.Item>
 
-              <Form.Item>
-                <RegisterUserWrapper>
-                  <RegisterTextNoAccount>
-                    Dont have account?
-                  </RegisterTextNoAccount>
-                  <RegisterDirectPath href="/signup">
-                    Register now
-                  </RegisterDirectPath>
-                </RegisterUserWrapper>
-              </Form.Item>
+            <Form.Item>
+              <RegisterUserWrapper>
+                <RegisterTextNoAccount>
+                  Dont have account?
+                </RegisterTextNoAccount>
+                <RegisterDirectPath href="/signup">
+                  Register now
+                </RegisterDirectPath>
+              </RegisterUserWrapper>
+            </Form.Item>
 
-              <Form.Item style={{ margin: "0 auto" }}>
-                <Button type="primary" htmlType="submit">
-                  Login
-                </Button>
-              </Form.Item>
-            </Form>
-          </FormWrapper>
-        </SignInFormWrapper>
-      </SignInWrapper>
-    </div>
+            <Form.Item style={{ margin: "0 auto" }}>
+              <Button type="primary" htmlType="submit">
+                Login
+              </Button>
+            </Form.Item>
+          </Form>
+        </FormWrapper>
+      </SignInFormWrapper>
+    </SignInWrapper>
   );
 };
 

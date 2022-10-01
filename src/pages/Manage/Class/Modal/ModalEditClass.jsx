@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Axios from "axios";
 import { Modal, Form, Input, InputNumber, notification } from "antd";
 import _ from "lodash";
@@ -10,10 +10,12 @@ import {
   actSaveUpdateClass,
   actSaveGetListClass,
 } from "@/redux/action/class";
+import classApi from "@/api/class";
 
 const ModalAddClass = (props) => {
   const { isModalOpen, selectedClass } = props;
   const [form] = Form.useForm();
+  const [isLoading, setIsLoading] = useState(true);
 
   const isCreateMode = useMemo(() => {
     return _.isEmpty(selectedClass);
@@ -28,6 +30,7 @@ const ModalAddClass = (props) => {
   }, [selectedClass, form]);
 
   const onSubmitForm = async () => {
+    setIsLoading(true);
     const { id, name, numberOfStudent } = await form.validateFields([
       "id",
       "name",
@@ -42,19 +45,19 @@ const ModalAddClass = (props) => {
 
     if (isCreateMode) {
       // create class
-      Axios.post("http://localhost:3002/class", {
+      const res = await classApi.createClass({
         id,
         name,
         numberOfStudent,
-      }).then((res) => {
-        if (res?.data?.code === 200) {
-          props.actSaveCreateClass(requestBody);
-          onCloseModal();
-          onShowNotifcation("success", "Add class successfully");
-        } else if (res?.data.code === 304) {
-          onShowNotifcation("error", "Class existed");
-        }
       });
+
+      if (res?.code === 200) {
+        props.actSaveCreateClass(requestBody);
+        onCloseModal();
+        onShowNotifcation("success", "Add class successfully");
+      } else if (res?.code === 304) {
+        onShowNotifcation("error", "Class existed");
+      }
     } else {
       // update class
       Axios.put("http://localhost:3002/class", {
@@ -64,7 +67,10 @@ const ModalAddClass = (props) => {
       }).then((res) => {
         if (res?.data?.code === 200) {
           props.actSaveUpdateClass(requestBody);
-          onCloseModal();
+          setTimeout(() => {
+            setIsLoading(false);
+            onCloseModal();
+          }, 4000);
           onShowNotifcation("success", "Edit class successfully");
         } else if (res?.data?.code === 400) {
           onShowNotifcation("error", "Error occur when edit class");
@@ -94,6 +100,7 @@ const ModalAddClass = (props) => {
       onCancel={onCloseModal}
       okText={isCreateMode ? "Add" : "Update"}
       width="25rem"
+      confirmLoading={isLoading}
     >
       <Form layout="vertical" form={form}>
         <Form.Item
