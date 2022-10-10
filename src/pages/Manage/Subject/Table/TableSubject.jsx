@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-
 import { Space, Table, Button, message, Popconfirm } from "antd";
 import "antd/dist/antd.css";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-
 import { connect } from "react-redux";
 import {
   actAddSubjectModal,
   actSelectedSubject,
   actSetListSubject,
 } from "@/redux/action/subject";
+import subjectApi from "@/api/subject";
 
 const TableSubject = (props) => {
   const { listSubject } = props;
@@ -19,10 +17,12 @@ const TableSubject = (props) => {
     getAllSubject();
   }, []);
 
-  const getAllSubject = () => {
-    axios.get("http://localhost:3002/subject").then((res) => {
-      props.actSetListSubject(res.data.data);
-    });
+  const getAllSubject = async () => {
+    const res = await subjectApi.getListSubject();
+
+    if (res) {
+      props.actSetListSubject(res.data);
+    }
   };
 
   const editSubject = (infoSubject) => {
@@ -30,16 +30,11 @@ const TableSubject = (props) => {
     props.actAddSubjectModal(true);
   };
 
-  const deleteSubject = (idDelete) => {
-    axios
-      .delete(`http://localhost:3002/subject/${idDelete}`, {
-        idDelete: idDelete,
-      })
-      .then((res) => {
-        if (res?.data?.code === 200) {
-          getAllSubject();
-        }
-      });
+  const deleteSubject = async (idDelete) => {
+    const res = await subjectApi.deleteSubject({ idDelete });
+    if (res?.code === 200) {
+      getAllSubject();
+    }
   };
 
   const confirmDelete = (idDelete) => {

@@ -1,13 +1,10 @@
 import React from "react";
 import TableStudent from "./Table/TableStudent";
-
 import { PlusOutlined } from "@ant-design/icons";
 import { Button } from "antd";
 import { StudentWrapper, PageHeadingWrapper, StudentContainer } from "./style";
-
 import { actSetModalStudentOpen } from "@/redux/action/student";
 import { connect } from "react-redux";
-
 import ModalAddEditStudent from "./Modal/ModalAddEditStudent";
 
 const Student = (props) => {

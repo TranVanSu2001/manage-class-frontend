@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import _ from "lodash";
-import axios from "axios";
 import { Space, Table, Button } from "antd";
 import { message, Popconfirm } from "antd";
 import { connect } from "react-redux";
@@ -14,6 +13,7 @@ import { actSaveGetListClass } from "@/redux/action/class";
 import { EditOutlined, DeleteOutlined, MailOutlined } from "@ant-design/icons";
 import classApi from "@/api/class";
 import ModalSendMail from "../Modal/ModalSendMail";
+import studentApi from "@/api/student";
 
 const TableStudent = (props) => {
   const { listStudent, listClass } = props;
@@ -23,10 +23,11 @@ const TableStudent = (props) => {
     onGetListClass();
   }, []);
 
-  const onGetAllStudent = () => {
-    axios.get("http://localhost:3002/student").then((res) => {
-      props.actSaveGetListStudent(res.data.data);
-    });
+  const onGetAllStudent = async () => {
+    const res = await studentApi.getListStudent();
+    if (res) {
+      props.actSaveGetListStudent(res?.data);
+    }
   };
 
   const onGetListClass = async () => {
@@ -40,17 +41,19 @@ const TableStudent = (props) => {
     props.actSetModalStudentOpen(true);
   };
 
-  const onDeleteStudent = (idDelete) => {
-    axios
-      .delete(`http://localhost:3002/student/${idDelete}`, {
-        idDelete: idDelete,
-      })
-      .then((res) => {
-        if (res?.data?.code === 200) {
-          onGetAllStudent();
-          message.success("Delete success!");
-        }
-      });
+  const onDeleteStudent = async (idDelete) => {
+    // axios
+    //   .delete(`http://localhost:3002/student/${idDelete}`, {
+    //     idDelete: idDelete,
+    //   })
+    //   .then((res) => {
+
+    const res = await studentApi.deleteStudent({ idDelete });
+    if (res?.code === 200) {
+      onGetAllStudent();
+      message.success("Delete success!");
+    }
+    // });
   };
 
   const onConfirmDelete = (idDelete) => {

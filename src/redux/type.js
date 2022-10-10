@@ -28,5 +28,4 @@ export const GET_LIST_ID_SUBJECT = "GET_LIST_ID_SUBJECT";
 
 //--------------USER---------
 export const SAVE_INFOMATION_SIGN_IN = "SAVE_INFOMATION_SIGN_IN";
-export const SET_AUTH_USER = "SET_AUTH_USER";
 export const USER_LOG_OUT = "USER_LOG_OUT";

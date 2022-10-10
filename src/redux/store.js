@@ -1,13 +1,14 @@
 import { legacy_createStore as createStore } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
-import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 import rootReducer from "./reducer";
 
 const persistConfig = {
-    key: 'manageApp',
-    storage,
-    whitelist: ['User', "Subject"]
+  key: "manageApp",
+  storage,
+  whitelist: ["User", "Subject"],
+  rehydrated: false,
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

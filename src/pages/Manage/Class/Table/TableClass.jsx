@@ -113,30 +113,39 @@ const TableClass = (props) => {
     props.actSetModalClassOpen(true);
   };
 
-  const onDeleteClass = (idDelete) => {
-    axios
-      .delete(`http://localhost:3002/class/${idDelete}`, {
-        idDelete: idDelete,
-      })
-      .then((res) => {
-        if (res?.data?.code === 200) {
-          onGetListClass();
-          message.success("Delete success!");
-        }
-      });
+  const onDeleteClass = async (idDelete) => {
+    // axios
+    //   .delete(`http://localhost:3002/class/${idDelete}`, {
+    //     idDelete: idDelete,
+    //   })
+
+    const res = await classApi.deleteClass({
+      idDelete,
+    });
+    if (res?.code === 200) {
+      onGetListClass();
+      message.success("Delete success!");
+    }
   };
 
-  const onViewClass = (classID) => {
-    axios
-      .get(`http://localhost:3002/class/getStudent/${classID}`, {
-        classID: classID,
-      })
-      .then((response) => {
-        setInfoStudentByClass(response.data.data);
-      })
-      .catch((error) => {
-        console.log("error: " + error);
-      });
+  const onViewClass = async (classID) => {
+    // axios
+    //   .get(`http://localhost:3002/class/getStudent/${classID}`, {
+    //     classID: classID,
+    //   })
+    //   .then((response) => {
+    //     setInfoStudentByClass(response.data.data);
+    //   })
+    //   .catch((error) => {
+    //     console.log("error: " + error);
+    //   });
+
+    const res = await classApi.getStudentClass({
+      classID,
+    });
+    if (res?.code === 200) {
+      setInfoStudentByClass(res.data);
+    }
     props.actViewStudentClass(true);
   };
 
