@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-
 import { Modal, Form, Input, notification } from "antd";
-
 import { connect } from "react-redux";
 import { actSaveSubjectMail } from "@/redux/action/student";
 
@@ -35,7 +33,7 @@ const ModalSendMail = (props) => {
           receiveMail,
         })
         .then((res) => {
-          if (res?.data?.code === 200) {
+          if (res?.code === 200) {
             noticationSendMail("success", "Send mail successfully");
           } else {
             noticationSendMail("error", "Send mail fail");

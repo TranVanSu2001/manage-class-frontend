@@ -1,9 +1,7 @@
 import React, { useMemo, useEffect } from "react";
-import axios from "axios";
 import { Modal, Form, Input, notification, Select } from "antd";
 import { connect } from "react-redux";
 import _ from "lodash";
-
 import {
   actSetModalStudentOpen,
   actSaveGetListStudent,
@@ -12,6 +10,7 @@ import {
   actSaveUpdateStudent,
 } from "@/redux/action/student";
 import { setListIdClass } from "@/redux/action/class";
+import studentApi from "@/api/student";
 
 const { Option } = Select;
 const listGender = ["Male", "Female"];
@@ -50,28 +49,28 @@ const ModalAddEditStudent = (props) => {
       sex: gender,
     };
 
+    //create student
     if (isCreateMode) {
-      // add student
-      axios.post("http://localhost:3002/student", requestBody).then((res) => {
-        if (res?.data?.code === 200) {
-          props.actSaveCreateStudent(requestBody);
-          onCloseModal();
-          onShowNotifcation("success", "Add student success");
-        } else if (res?.data.code === 304) {
-          onShowNotifcation("error", "Student existed");
-        }
-      });
+      const res = await studentApi.createStudent(requestBody);
+      if (res?.code === 200) {
+        props.actSaveCreateStudent(requestBody);
+        onCloseModal();
+        onShowNotifcation("success", "Add student success");
+      } else if (res?.code === 304) {
+        onShowNotifcation("error", "Student existed");
+      } else {
+        console.log("data set: ", res.data);
+      }
+      //update student
     } else {
-      //edit student
-      axios.put("http://localhost:3002/student", requestBody).then((res) => {
-        if (res?.data?.code === 200) {
-          props.actSaveUpdateStudent(requestBody);
-          onCloseModal();
-          onShowNotifcation("success", "Edit student successfully");
-        } else if (res?.data?.code === 400) {
-          onShowNotifcation("error", "Error occur when edit student");
-        }
-      });
+      const res = await studentApi.updateStudent(requestBody);
+      if (res?.code === 200) {
+        props.actSaveUpdateStudent(requestBody);
+        onCloseModal();
+        onShowNotifcation("success", "Edit student successfully");
+      } else if (res?.code === 400) {
+        onShowNotifcation("error", "Error occur when edit student");
+      }
     }
   };
 

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Axios from "axios";
 import { Modal, Form, Input, InputNumber, notification } from "antd";
 import _ from "lodash";
 import { connect } from "react-redux";
@@ -30,7 +29,8 @@ const ModalAddClass = (props) => {
   }, [selectedClass, form]);
 
   const onSubmitForm = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
+    console.log("submit");
     const { id, name, numberOfStudent } = await form.validateFields([
       "id",
       "name",
@@ -60,22 +60,27 @@ const ModalAddClass = (props) => {
       }
     } else {
       // update class
-      Axios.put("http://localhost:3002/class", {
+      // Axios.put("http://localhost:3002/class", {
+      //   id,
+      //   name,
+      //   numberOfStudent,
+      // }).then((res) => {
+
+      const res = await classApi.updateClass({
         id,
         name,
         numberOfStudent,
-      }).then((res) => {
-        if (res?.data?.code === 200) {
-          props.actSaveUpdateClass(requestBody);
-          setTimeout(() => {
-            setIsLoading(false);
-            onCloseModal();
-          }, 4000);
-          onShowNotifcation("success", "Edit class successfully");
-        } else if (res?.data?.code === 400) {
-          onShowNotifcation("error", "Error occur when edit class");
-        }
       });
+
+      console.log("res: ", res);
+
+      if (res?.code === 200) {
+        props.actSaveUpdateClass(requestBody);
+        onCloseModal();
+        onShowNotifcation("success", "Edit class successfully");
+      } else if (res?.code === 400) {
+        onShowNotifcation("error", "Error occur when edit class");
+      }
     }
   };
 
@@ -100,7 +105,7 @@ const ModalAddClass = (props) => {
       onCancel={onCloseModal}
       okText={isCreateMode ? "Add" : "Update"}
       width="25rem"
-      confirmLoading={isLoading}
+      // confirmLoading={isLoading}
     >
       <Form layout="vertical" form={form}>
         <Form.Item

@@ -1,6 +1,5 @@
 import moment from "moment";
 import { useEffect, useMemo } from "react";
-import axios from "axios";
 import { Modal, Form, Input, notification, Select, DatePicker } from "antd";
 import _ from "lodash";
 import { connect } from "react-redux";
@@ -10,12 +9,14 @@ import {
   actSaveCreateSubject,
   actSaveUpdateSubject,
 } from "@/redux/action/subject";
-import { setListIdClass } from "@/redux/action/class";
+import { actSaveGetListClass } from "@/redux/action/class";
+import subjectApi from "@/api/subject";
+import classApi from "@/api/class";
 
 const dateFormat = "DD/MM/YYYY";
 
 const ModalAddEditSubject = (props) => {
-  const { listIdClass, activeAddModal, selectedSubject } = props;
+  const { listClass, activeAddModal, selectedSubject } = props;
   const [form] = Form.useForm();
 
   const isCreateMode = useMemo(() => {
@@ -29,10 +30,12 @@ const ModalAddEditSubject = (props) => {
     getListIdClass();
   }, []);
 
-  const getListIdClass = () => {
-    axios.get("http://localhost:3002/class/listIdClass").then((res) => {
-      props.setListIdClass(res?.data?.data || []);
-    });
+  const getListIdClass = async () => {
+    const res = await classApi.getListClass();
+
+    if (res) {
+      props.actSaveGetListClass(res?.data || []);
+    }
   };
 
   useEffect(() => {
@@ -66,22 +69,20 @@ const ModalAddEditSubject = (props) => {
     };
 
     if (isCreateMode) {
-      axios.post("http://localhost:3002/subject", requestBody).then((res) => {
-        if (res?.data?.code === 200) {
-          props.actSaveCreateSubject(requestBody);
-          onCloseModal();
-          onShowNotifcation("success", "Add subject success");
-        }
-      });
+      const res = await subjectApi.createSubject(requestBody);
+      if (res?.code === 200) {
+        props.actSaveCreateSubject(requestBody);
+        onCloseModal();
+        onShowNotifcation("success", "Add subject success");
+      }
     } //edit subject
     else {
-      axios.put("http://localhost:3002/subject", requestBody).then((res) => {
-        if (res?.data?.code === 200) {
-          props.actSaveUpdateSubject(requestBody);
-          onCloseModal();
-          onShowNotifcation("success", "Edit subject success");
-        }
-      });
+      const res = await subjectApi.updateSubject(requestBody);
+      if (res?.code === 200) {
+        props.actSaveUpdateSubject(requestBody);
+        onCloseModal();
+        onShowNotifcation("success", "Edit subject success");
+      }
     }
   };
 
@@ -135,11 +136,11 @@ const ModalAddEditSubject = (props) => {
         </Form.Item>
 
         <Form.Item label="Class" name="classID">
-          <Select placeholder="Select">
-            {listIdClass?.map((key, index) => {
+          <Select placeholder="Select a class">
+            {listClass?.map((classInfo, index) => {
               return (
-                <Option value={key.id} key={key.id}>
-                  Class {key.id}
+                <Option value={classInfo?.id} key={index}>
+                  Class {classInfo?.id}
                 </Option>
               );
             })}
@@ -169,14 +170,14 @@ const ModalAddEditSubject = (props) => {
 
 export default connect(
   (store) => ({
-    listIdClass: store.Class.listIdClass,
+    listClass: store.Class.listClass,
     selectedSubject: store.Subject.selectedSubject,
     activeAddModal: store.Subject.activeAddModal,
     listIdSubject: store.Subject.listIdSubject,
   }),
   {
     actAddSubjectModal,
-    setListIdClass,
+    actSaveGetListClass,
     actSelectedSubject,
     actSaveUpdateSubject,
     actSaveCreateSubject,

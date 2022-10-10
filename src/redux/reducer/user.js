@@ -1,9 +1,8 @@
-import { SAVE_INFOMATION_SIGN_IN, SET_AUTH_USER, USER_LOG_OUT } from "../type";
+import { SAVE_INFOMATION_SIGN_IN, USER_LOG_OUT } from "../type";
 
 const initialState = {
   token: "",
   passwordLogin: "",
-  isAuth: false,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -15,15 +14,6 @@ const userReducer = (state = initialState, action) => {
         ...state,
         usernameLogin: payload.usernameLogin,
         token: payload.token
-      };
-
-    case USER_LOG_OUT:
-      return initialState;
-
-    case SET_AUTH_USER:
-      return {
-        ...state,
-        isAuth: payload,
       };
 
     case USER_LOG_OUT:
